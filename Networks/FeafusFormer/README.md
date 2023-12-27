@@ -1,4 +1,4 @@
-# Unsupervised Hybrid Network of Transformer and CNN for Blind Hyperspectral and RGB image Fusion
+# Unsupervised Hybrid Network of Transformer and CNN for Blind Hyperspectral and Multispectral Image Fusion
 This is a transformer-based super-resolution algorithm that fuse hyperspectral and multispectral image in a unsupervised manner in coping with unknown degradation in spectral and spatial domain. The uHNTC fully exploits the long-range information and multi-level feature of the both MSI and HSI. The HR texture is transfered to the LR-HSI by fusing the residual texture information of different level feature extracted from HR-RGB. For an HSI with size of 16x16x31, the uFT can achieve 32x spatial improvement with very high accuracy incoping with blind degradations. The quantitative results outperform exisiting SOTA algorithms.  
 ***The paper has been submitted to a journal***  
 FeafusFormer performs strong ablity in blind fusion task. The performance comparisons are tested on CAVE data set  with 32x scale factor. 
