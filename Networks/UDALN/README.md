@@ -9,12 +9,12 @@ The early access version can be downloaded in my [researchgate](https://www.rese
 More information can be found in my [Google Scholar Citations](https://scholar.google.com/citations?user=aSPDpmgAAAAJ&hl=zh-CN).
 ___________
 
-<img src="./Imgs/Fig1.png" width="666px"/>
+<img src="https://github.com/JiaxinLiCAS/UDALN_GRSL/tree/master/Imgs/Fig1.png" width="666px"/>
 
 **Fig.1.** Architecture of the proposed unsupervised degradations adaptive learning network, abbreviated as UDALN, for the task of HSI-MSI fusion.
 
 ## Directory structure
-<img src="./Imgs/Structure.png" width="200px"/>
+<img src="https://github.com/JiaxinLiCAS/UDALN_GRSL/tree/master/Imgs/Structure.png" width="200px"/>
 
 **Fig.2.** Directory structure. There are three folders and six .py files in UDALN_GRSL-master.
 
