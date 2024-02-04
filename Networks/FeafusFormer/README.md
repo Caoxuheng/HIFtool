@@ -6,7 +6,7 @@ FeafusFormer performs strong ablity in blind fusion task. The performance compar
 # Flowchart
 ![Flowchart](https://github.com/Caoxuheng/imgs/blob/main/HIFtool/flowchart_Feafusformer.png)
 # Result presentation  
-Nonblind fusion results on Pavia, Chikusei and Xiongan datasets.
+Nonblind fusion results on Pavia, Chikusei and Xiongan datasets.  
 ![Result](https://github.com/Caoxuheng/imgs/blob/main/HIFtool/result_feafusformer.png)
 The reconstructed results can be downloaded from [`here`](https://aistudio.baidu.com/aistudio/datasetdetail/173277).
 # Guidance
@@ -16,7 +16,6 @@ The reconstructed results can be downloaded from [`here`](https://aistudio.baidu
 `Python3.8`  
 `torch 1.12`,`torchvision 0.13.0`  
 `Numpy`,`Scipy`  
-*Also, we will create a Paddle version that implements FeafusFormer in AI Studio online for free!*
 ## Datasets
 [`CAVE dataset`](https://www1.cs.columbia.edu/CAVE/databases/multispectral/), 
  [`Preprocessed CAVE dataset`](https://aistudio.baidu.com/aistudio/datasetdetail/147509).
