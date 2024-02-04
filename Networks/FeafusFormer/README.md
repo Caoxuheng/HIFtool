@@ -5,7 +5,9 @@ FeafusFormer performs strong ablity in blind fusion task. The performance compar
 ![Introduce](https://github.com/Caoxuheng/imgs/blob/main/%E5%9B%BE%E7%89%8715.png)
 # Flowchart
 ![Flowchart](https://github.com/Caoxuheng/imgs/blob/main/HIFtool/flowchart_Feafusformer.png)
-# Result presentation
+# Result presentation  
+Nonblind fusion results on Pavia, Chikusei and Xiongan datasets.
+![Result](https://github.com/Caoxuheng/imgs/blob/main/HIFtool/result_feafusformer.png)
 The reconstructed results can be downloaded from [`here`](https://aistudio.baidu.com/aistudio/datasetdetail/173277).
 # Guidance
 **None**
