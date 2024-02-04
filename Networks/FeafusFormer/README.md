@@ -4,7 +4,7 @@ This is a transformer-based super-resolution algorithm that fuse hyperspectral a
 FeafusFormer performs strong ablity in blind fusion task. The performance comparisons are tested on CAVE data set  with 32x scale factor. 
 ![Introduce](https://github.com/Caoxuheng/imgs/blob/main/%E5%9B%BE%E7%89%8715.png)
 # Flowchart
-**None**
+![Flowchart](https://github.com/Caoxuheng/imgs/blob/main/HIFtool/flowchart_Feafusformer.png)
 # Result presentation
 The reconstructed results can be downloaded from [`here`](https://aistudio.baidu.com/aistudio/datasetdetail/173277).
 # Guidance
