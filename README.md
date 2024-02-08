@@ -21,4 +21,4 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)  | |
 </td></tr> </table>
 
-Adding your algorithm, please contact at caoxuheng@tongji.edu.cn
+Adding your algorithm, please contact at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)
