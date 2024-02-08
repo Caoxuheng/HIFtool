@@ -20,3 +20,5 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net)  | |
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)  | |
 </td></tr> </table>
+
+Adding your algorithm, please contact at caoxuheng@tongji.edu.cn
