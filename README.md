@@ -7,8 +7,8 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 <tr><td>
 
 
-| [HySure](https://github.com/alfaiate/HySure) |   
-| [HyMS](https://github.com/Caoxuheng/HyMS) |   
+ [HySure](https://github.com/alfaiate/HySure)  
+ [HyMS](https://github.com/Caoxuheng/HyMS)    
 </td><td>
 
 |   supervised   |   unsupervised   |
