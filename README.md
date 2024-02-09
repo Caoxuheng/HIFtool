@@ -6,7 +6,7 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 <tr><th> Model-based </th><th>Learning-based</th></tr>
 <tr><td>
 
-|   Topic    |
+|   Title    |
 |--|
 | [HySure](https://github.com/alfaiate/HySure) |   |   
 | [HyMS](https://github.com/Caoxuheng/HyMS) |   |   
