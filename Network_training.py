@@ -164,8 +164,8 @@ if __name__=='__main__':
             if General:
                 from Dataloader_tool import ChikuseiDataset
 
-                Train_data = ChikuseiDataset('E:\Multispectral Image Dataset\chikusei\chikusei.mat',type='train')
-                Val_data =  ChikuseiDataset('E:\Multispectral Image Dataset\chikusei\chikusei.mat',type='eval')
+                Train_data = ChikuseiDataset('Multispectral Image Dataset\chikusei\chikusei.mat',type='train')
+                Val_data =  ChikuseiDataset('Multispectral Image Dataset\chikusei\chikusei.mat',type='eval')
 
 
                 training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=Batch_size, shuffle=True,
