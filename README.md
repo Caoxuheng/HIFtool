@@ -16,7 +16,8 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 | [MoG-DCN](https://github.com/chengerr/Model-Guided-Deep-Hyperspectral-Image-Super-resolution)  |  [UDALN](https://github.com/JiaxinLiCAS/UDALN_GRSL)   |  
 | [Fusformer](https://github.com/J-FHu/Fusformer) |[DBSR](https://github.com/JiangtaoNie/DBSR)   |
 | [PSRT](https://github.com/shangqideng/PSRT)  |[FeafusFormer](https://github.com/Caoxuheng/FeafusFormer)|
-| [MSST-Net](https://github.com/jx-mzc/MSST-Net)  | |
+| [MSST-Net](https://github.com/jx-mzc/MSST-Net)  | |  
+| [DCTransformer](https://github.com/qingma2016/DCTransformer)[On hold]  | |
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)  | |
 </td></tr> </table>
 
