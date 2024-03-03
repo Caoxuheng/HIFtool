@@ -17,7 +17,7 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 | [Fusformer](https://github.com/J-FHu/Fusformer) |[DBSR](https://github.com/JiangtaoNie/DBSR)   |
 | [PSRT](https://github.com/shangqideng/PSRT)  |[FeafusFormer](https://github.com/Caoxuheng/FeafusFormer)|
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net)  | |  
-| [DCTransformer](https://github.com/qingma2016/DCTransformer) [**On hold**]  | |
+| [DCTransformer](https://github.com/qingma2016/DCTransformer)  | |
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)  | |
 </td></tr> </table>
 
