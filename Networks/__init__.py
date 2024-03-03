@@ -29,6 +29,10 @@ def model_generator(method:str, device="cuda"):
 
         from .PKLNet.Config import args as opt
         model = MainNet(sf=32, channel=128).to(device)
+    elif 'DCTransformer' in method :
+        from .DCTransformer.net import DCT
+        from .DCTransformer.Config import opt
+        model =DCT(opt.hsi_channel,opt.msi_channel, opt.sf).to(device)
     elif 'HyMS' in method:
         from .HyMS.config import args
         from .HyMS.main_gpu import HyMS
