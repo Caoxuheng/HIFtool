@@ -1,5 +1,5 @@
 # ![PyTorch](https://img.shields.io/badge/-white?style=for-the-badge&logo=pytorch)HIFToolBox
-A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSST, iDaFormer; model-based: HyMS, HySure; unsupervised: UDALN, UMSFT, FeafusFormer, DBSR.
+A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSST, DCTransformer,iDaFormer; model-based: HyMS, HySure; unsupervised: UDALN, UMSFT, FeafusFormer, UMC2FF, DBSR.
 
 ⚡**Algorithm List**
 <table>
@@ -14,11 +14,11 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 |   supervised   |   unsupervised   |
 |--|--|
 | [MoG-DCN](https://github.com/chengerr/Model-Guided-Deep-Hyperspectral-Image-Super-resolution)  |  [UDALN](https://github.com/JiaxinLiCAS/UDALN_GRSL)   |  
-| [Fusformer](https://github.com/J-FHu/Fusformer) |[DBSR](https://github.com/JiangtaoNie/DBSR) [**On hold**]  |
+| [Fusformer](https://github.com/J-FHu/Fusformer) |[DBSR](https://github.com/JiangtaoNie/DBSR) [*On hold*]  |
 | [PSRT](https://github.com/shangqideng/PSRT)  |[FeafusFormer](https://github.com/Caoxuheng/FeafusFormer)|
-| [MSST-Net](https://github.com/jx-mzc/MSST-Net)  |[UMC2FF](https://github.com/JiaxinLiCAS/UMC2FF_GRSL)[**On hold**] |  
+| [MSST-Net](https://github.com/jx-mzc/MSST-Net)  |[UMC2FF](https://github.com/JiaxinLiCAS/UMC2FF_GRSL)[*On hold*] |  
 | [DCTransformer](https://github.com/qingma2016/DCTransformer)  | |
-| [iDaFormer](https://github.com/Caoxuheng/iDaFormer)  | |
+| [iDaFormer](https://github.com/Caoxuheng/iDaFormer)[*On hold*]  | |
 </td></tr> </table>
 
 Adding your algorithm, please contact at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)
