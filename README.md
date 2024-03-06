@@ -19,6 +19,6 @@ A toolbox for HSI-MSI fusion, including supervised: MoGDCN, Fusformer, PSRT, MSS
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net)  |[UMC2FF](https://github.com/JiaxinLiCAS/UMC2FF_GRSL)[*On hold*] |  
 | [DCTransformer](https://github.com/qingma2016/DCTransformer)  | |
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)[*On hold*]  | |
-</td></tr> </table>
+</td></tr> </table>  
 
-Adding your algorithm, please contact at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)
+ For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)
