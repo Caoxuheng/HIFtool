@@ -1,8 +1,8 @@
 # ![PyTorch](https://img.shields.io/badge/-white?style=for-the-badge&logo=pytorch)HIFToolBox
 ## Goal
-Welcome to our groundbreaking project! Our mission is to compile state-of-the-art (SOTA) algorithms in the field of hyperspectral and multispectral/panchromatic sharpening. Our comprehensive collection spans three categories: model-based algorithms such as HySure and HyMS, unsupervised/self-supervised learning algorithms like UDALN, UMFT, FeafusFormer, UMC2FF, and DBSR, as well as supervised learning algorithms including MoGDCN, Fusformer, PSRT, MSST, DCTransformer, and iDaForme. Join us in pioneering the advancement of spectral image processing technology!  
+Welcome to our groundbreaking project! Our mission is to compile state-of-the-art (SOTA) algorithms in the field of hyperspectral and multispectral/panchromatic sharpening. Our comprehensive collection spans three categories: model-based algorithms, unsupervised/self-supervised learning algorithms, as well as supervised learning algorithms. Join us in pioneering the advancement of spectral image processing technology!  
 
-本项目旨在收录高光谱和多光谱/全色锐化领域的SOTA算法。收录算法主要分三类：基于模型的算法【HySure\HyMS】、自/无监督学习算法【 UDALN\UMSFT\FeafusFormer\UMC2FF\DBSR】,以及监督学习算法【MoGDCN, Fusformer, PSRT, MSST, DCTransformer,iDaForme】。加入我们，共同推动光谱图像处理技术的发展！！！！
+本项目旨在收录高光谱和多光谱/全色锐化领域的SOTA算法。收录算法主要分三类：基于模型的算法、自/无监督学习算法,以及监督学习算法。加入我们，共同推动光谱图像处理技术的发展！！！！
 
 ## Algorithm List⚡
 <table>
