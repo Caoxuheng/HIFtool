@@ -5,7 +5,9 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 本项目旨在收录高光谱和多光谱/全色锐化领域的SOTA算法。收录算法主要分三类：基于模型的算法、自/无监督学习算法,以及监督学习算法。加入我们，共同推动光谱图像处理技术的发展！！！！
 
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
-<!--  may -->
+<!--  may -->  
+ 
+> **[2024.03.14]**  Added download links for the Chikusei dataset.   
 
 > **[2024.03.05]**  DCTransformer, a new supervised learning method, has been added to our collection of SOTA algorithms.  
 </p></details>
@@ -28,7 +30,11 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net)  |[UMC2FF](https://github.com/JiaxinLiCAS/UMC2FF_GRSL)[*On hold*] |  
 | [DCTransformer](https://github.com/qingma2016/DCTransformer)  | |
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)[*On hold*]  | |
-</td></tr> </table>  
+</td></tr> </table>   
+
+## Dataset  
+Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=plastic&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)
+
 
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)  
 
