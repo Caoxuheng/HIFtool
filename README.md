@@ -19,7 +19,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 
 
  [HySure](https://github.com/alfaiate/HySure)  
- [HyMS](https://github.com/Caoxuheng/HyMS)    
+ [HyMS](https://github.com/Caoxuheng/HyMS)[[Endnote](https://serveri.dotaindex.com/enw.php?q=info:xLPyMJZ-FpMJ:scholar.google.com/&output=citation&scisdr=ClGi7GzdGAA:AFWwaeYAAAAAZfKHBs36iuksvtwHR3tOxJj4K_E&scisig=AFWwaeYAAAAAZfKHBi22c5pG0ocO8IdsD7IeD64&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]    
 </td><td>
 
 |   supervised   |   unsupervised   |
@@ -35,9 +35,9 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 ## Dataset  
 Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=plastic&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)
 
-
 ## 
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)  
  ## Acknowledege
 We would like to express our sincere gratitude to the following individuals and teams for granting us permission to include their algorithms in our project:  
-✨ [Ma Qing](https://github.com/qingma2016)[DCTransformer Permission];  ✨ [Li Jiaxin](https://github.com/JiaxinLiCAS) [UDALN Permission]
+✨ [Ma Qing](https://github.com/qingma2016)[DCTransformer Permission];  ✨ [Li Jiaxin](https://github.com/JiaxinLiCAS) [UDALN Permission]  
+
