@@ -28,7 +28,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 | [Fusformer](https://github.com/J-FHu/Fusformer) |[DBSR](https://github.com/JiangtaoNie/DBSR) [*On hold*]  |
 | [PSRT](https://github.com/shangqideng/PSRT)  |[FeafusFormer](https://github.com/Caoxuheng/FeafusFormer)|
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net)  |[UMC2FF](https://github.com/JiaxinLiCAS/UMC2FF_GRSL)[*On hold*] |  
-| [DCTransformer](https://github.com/qingma2016/DCTransformer)  | |
+| [DCTransformer](https://github.com/qingma2016/DCTransformer)  |[NonRegSRNet](https://github.com/saber-zero/NonRegSRNet)[*On hold*] |
 | [iDaFormer](https://github.com/Caoxuheng/iDaFormer)[*On hold*]  | |
 </td></tr> </table>   
 
