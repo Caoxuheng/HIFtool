@@ -35,7 +35,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 </td></tr> </table>   
 
 ## Dataset  
-Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=plastic&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)
+Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=flat&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)
 
 ## 
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)  
