@@ -7,6 +7,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
  
+> **[2024.03.14]**  Fixed the bug of missing the 'utils' file.  
+
 > **[2024.03.14]**  Added download links for the Chikusei dataset.   
 
 > **[2024.03.05]**  DCTransformer, a new supervised learning method, has been added to our collection of SOTA algorithms.  
