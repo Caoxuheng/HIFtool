@@ -41,5 +41,5 @@ Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?st
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)  
  ## Acknowledege
 We would like to express our sincere gratitude to the following individuals and teams for granting us permission to include their algorithms in our project:  
-✨ [Ma Qing](https://github.com/qingma2016)[DCTransformer Permission];  ✨ [Li Jiaxin](https://github.com/JiaxinLiCAS) [UDALN Permission]  
+ ✨ [Jiaxin Li （李嘉鑫）](https://github.com/JiaxinLiCAS) [ UDALN Permission ]； ✨ [Qing Ma （马 清）](https://github.com/qingma2016)[ DCTransformer Permission ]   
 
