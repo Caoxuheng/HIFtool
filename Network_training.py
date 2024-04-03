@@ -19,7 +19,7 @@ if not os.path.isdir(Method):
 
 if case== 'model':
     '''
-    Model-based methods default with requirements of [Spectral response function] and [point spread function]
+    Model-based methods come with the requirements of [Spectral response function] and [point spread function]
     '''
     # Load [Spectral response function] and [point spread function]
     srf = sio.loadmat('Dataloader_tool/srflib/chikusei_128_4.mat')['R']
