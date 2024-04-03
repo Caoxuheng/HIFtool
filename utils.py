@@ -65,7 +65,7 @@ class Spatial_Degradation(nn.Module):
             stride = sf
             sf = kernel.shape[0]
         else:
-            kernel = getGaussiankernel(sf,sf//1.5)
+            kernel = getGaussiankernel(sf,sf*0.866)
             kernel @=kernel.T
             stride = sf
         if batch ==1 :
@@ -103,10 +103,8 @@ def get_pairs(gt,net,srf,noise=None,NSR_HSI=30,NSR_RGB=40):
         hrrgb = add_noise(hrrgb,NSR_RGB)
     return lrhsi,hrrgb
 
-def getInputImgs(args,name,index,spadown,noise=False):
-    dataset = Dataloader(name)
-    GT = dataset.load(index)
-    SRF = np.load(args.srfpath)
-    lr_hsi, hr_rgb = get_pairs(GT, spadown, SRF, noise=noise)
 
+def getInputImgs(GT,dataset_name,spadown,srf,noise=False):
+
+    lr_hsi, hr_rgb = get_pairs(GT, spadown, srf, noise=noise)
     return lr_hsi.unsqueeze(0),hr_rgb.unsqueeze(0),GT
