@@ -40,7 +40,9 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=flat&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)
 
 ## 
- For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email at [![Email](https://img.shields.io/badge/-caoxuhengcn@gmail.com-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)  
+ For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email.  
+ 关于HIFTool的任何问题、反馈或疑问，请随时发起issue或电子邮件与我联系。  
+  [![Email](https://img.shields.io/badge/-caoxuhengcn%20(Supporting%20EN/CN)%20-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)   
  ## Acknowledege
 We would like to express our sincere gratitude to the following individuals and teams for granting us permission to include their algorithms in our project:  
  ✨ [Jiaxin Li （李嘉鑫）](https://github.com/JiaxinLiCAS) [ UDALN & UMC2FF Permission ]； ✨ [Qing Ma （马 清）](https://github.com/qingma2016)[ DCTransformer Permission ];  ✨ [Jiangtao Nie （聂江涛）](https://github.com/JiangtaoNie)[ DBSR Permission ]  
