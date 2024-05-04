@@ -31,7 +31,7 @@ def init_weights(*modules):
 
 class MainNet(nn.Module):
 
-    def __init__(self,channel,sf):
+    def __init__(self,channel,msichannel,sf):
         super(MainNet, self).__init__()
         num_channel = channel
         self.sf=sf
@@ -40,7 +40,7 @@ class MainNet(nn.Module):
         self.T_E = Transformer_E(num_feature)
         self.T_D = Transformer_D(num_feature)
         self.Embedding = nn.Sequential(
-            nn.Linear(num_channel+4,num_feature),
+            nn.Linear(num_channel+msichannel,num_feature),
         )
         self.refine = nn.Sequential(
             nn.Conv2d(num_feature,num_feature,3,1,1),
