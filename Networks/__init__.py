@@ -11,7 +11,7 @@ def model_generator(method:str, device="cuda"):
         model = PKLNet(sf=opt.sf,in_c=opt.inchannel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
     elif 'PSRT' in method:
         from .PSRT.net import PSRTnet
-        from  .PSRT.Config import args_parser
+        from  .PSRT.config import args_parser
         opt = args_parser()
         model = PSRTnet(opt).to(device)
     elif 'MSST' in method:
