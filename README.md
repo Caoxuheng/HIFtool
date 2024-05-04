@@ -7,6 +7,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+> **[2024.05.04]**  Fixed the bug of missing the 'config.py' in Fusformer.     
+
 > **[2024.04.03]**  DBSR, a blind unsupervised learning method, has been added to our collection of SOTA algorithms.   
 
 > **[2024.03.20]**  Fixed the bug of missing the 'utils' file.  
