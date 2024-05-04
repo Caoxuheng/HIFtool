@@ -27,8 +27,8 @@ def model_generator(method:str, device="cuda"):
     elif 'Fusformer' in method :
         from .Fusformer.net import MainNet
 
-        from .PKLNet.Config import args as opt
-        model = MainNet(sf=32, channel=128).to(device)
+        opt = None
+        model = MainNet(sf=4, channel=4,msichannel=1).to(device)
     elif 'DCTransformer' in method :
         from .DCTransformer.net import DCT
         from .DCTransformer.Config import opt
