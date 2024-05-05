@@ -524,3 +524,76 @@ class XionganDataset(Dataset):
 
     def __len__(self):
         return self.label.shape[0]
+
+class QBDataset(Dataset):
+    def __init__(self, mat_save_path,ratio=4, type='train'):
+        super(QBDataset, self).__init__()
+        self.mat_save_path = mat_save_path
+        self.hsi_channel = 4
+        self.msi_channel = 1
+
+        self.ratio = ratio
+        self.type = type
+        # Generate samples and labels
+        if self.type=='train':
+           self.hsi_data, self.msi_data, self.label = self.generateTrain()
+        if self.type=='eval':
+            self.hsi_data, self.msi_data, self.label = self.generateTrain()
+        if self.type=='test':
+            self.hsi_data, self.msi_data, self.label = self.generateTest()
+
+    def getData1(self):
+        from h5py import File
+        hrhsi=File(self.mat_save_path)
+
+
+        return  np.array(hrhsi["lms"]),np.array(hrhsi["ms"]), np.array(hrhsi["pan"])
+    def getData(self):
+        try:
+            hrhsi = sio.loadmat(self.mat_save_path)
+            return  hrhsi["lms"],hrhsi["ms"], hrhsi["pan"]
+        except:
+            from h5py import File
+            hrhsi = File(self.mat_save_path)
+
+            return  np.array(hrhsi["lms"]).T,np.array(hrhsi["ms"]).T, np.array(hrhsi["pan"]).T
+    def generateTrain(self):
+        hrhsi, lrhsi, hrmsi = self.getData1()
+
+        # Data type conversion
+        if hrhsi.dtype != np.float32: hrhsi = hrhsi.astype(np.float32)
+        if lrhsi.dtype != np.float32: lrhsi = lrhsi.astype(np.float32)
+        if hrmsi.dtype != np.float32: hrmsi = hrmsi.astype(np.float32)
+
+        return lrhsi/lrhsi.max(), hrmsi/hrmsi.max(), hrhsi/hrhsi.max()
+
+
+
+    def generateTest(self):
+        hrhsi, lrhsi, hrmsi = self.getData()
+
+        # Data type conversion
+        if hrhsi.dtype != np.float32: hrhsi = hrhsi.astype(np.float32)
+        if lrhsi.dtype != np.float32: lrhsi = lrhsi.astype(np.float32)
+        if hrmsi.dtype != np.float32: hrmsi = hrmsi.astype(np.float32)
+
+        return lrhsi[None],  hrmsi[None,:,:,None],hrhsi[None]
+
+    def __getitem__(self, index):
+
+        if self.type =='test':
+            hrhsi = np.transpose(self.label[index], (2,0,1))
+            hrmsi= np.transpose(self.msi_data[index], (2,0,1))
+            lrhsi = np.transpose(self.hsi_data[index], (2,0,1))
+        else:
+            hrhsi = self.label[index]
+            hrmsi = self.msi_data[index]
+            lrhsi = self.hsi_data[index]
+        sample = {'hrhsi': torch.tensor(hrhsi, dtype=torch.float32),
+                  'hrmsi': torch.tensor(hrmsi, dtype=torch.float32),
+                  'lrhsi': torch.tensor(lrhsi, dtype=torch.float32)
+                  }
+        return sample
+
+    def __len__(self):
+        return self.label.shape[0]
