@@ -7,6 +7,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+> **[2024.05.05]**  Compatibility with Pancollection Dataset Achieved.     
+
 > **[2024.05.04]**  Fixed the bug of missing the 'config.py' in Fusformer.     
 
 > **[2024.04.03]**  DBSR, a blind unsupervised learning method, has been added to our collection of SOTA algorithms.   
@@ -39,7 +41,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 </td></tr> </table>   
 
 ## Dataset  
-Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=flat&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)
+Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=flat&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)  
+Recommended Pansharpening Datasets [![Baidu](https://img.shields.io/badge/PanCollection-white?style=flat&logo=baidu&logoColor=blue)](https://github.com/liangjiandeng/PanCollection)
 
 ## 
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email.  
