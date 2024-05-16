@@ -7,7 +7,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
-> **[2024.05.16]**  Pre-trained models on QB dataset of [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection) are released.     
+> **[2024.05.16]**  Pre-trained models on the QB dataset in [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection) are released.     
 
 > **[2024.05.05]**  Compatible with [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection).     
 
