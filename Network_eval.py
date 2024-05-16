@@ -90,10 +90,10 @@ if __name__=='__main__':
 
     # Dataset Setting
     dataset_name = 'QB'
-    model_folder = Method + '/' + dataset_name + '/'
+    model_folder = 'PretrainModel/' + dataset_name + '/'+ Method +'/' 
     # Training Setting
     Batch_size = 1
-    start =1000
+    start =400
 
     # Train_data = QBDataset('Multispectral Image Dataset\QB/test/Test(HxWxC)_qb_data8.mat', type='test')
 
