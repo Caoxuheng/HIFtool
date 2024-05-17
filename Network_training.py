@@ -32,11 +32,17 @@ else:
     import torch
     from torch.utils.data import DataLoader
     if case =='unsupervised':
-        srf = sio.loadmat('Dataloader_tool/srflib/chikusei_128_4.mat')['R']
-        psf= cv2.getGaussianKernel(opt.sf//2 * 2 + 1, sigma=opt.sf*0.866)
-        sp_matrix = psf @ psf.T
-        model.equip(srf,sp_matrix)
-        Fusion(model,opt,model_folder,dataset_name,srf)
+        blind = True
+        if blind is True:
+            mat_save_path = 'E:/Multispectral Image Dataset\QB/test/Test(HxWxC)_qb_data8.mat'
+        else:
+            srf = sio.loadmat('Dataloader_tool/srflib/chikusei_128_4.mat')['R']
+            psf= cv2.getGaussianKernel(opt.sf//2 * 2 + 1, sigma=opt.sf*0.866)
+            sp_matrix = psf @ psf.T
+            model.equip(srf,sp_matrix)
+
+        Fusion(model,model_folder=model_folder,blind=True,mat_save_path= mat_save_path ,dataset_name=None,srf=None)
+
     else:
         # Training Setting
         Batch_size = 2
