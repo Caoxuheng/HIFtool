@@ -7,16 +7,34 @@ def ModeSelection(Mode:str):
     if 'unsupervised' in Mode:
         from utils import SpaDown, getInputImgs
         import scipy.io as sio
-        def Unsupervisedfusion(model, opt, model_folder, dataset_name,srf):
+        def Unsupervisedfusion(model,  model_folder,blind=True, mat_save_path=None ,opt=None, dataset_name=None,srf=None):
             if not os.path.isdir(model_folder):
                 os.mkdir(model_folder)
-            Spatialdown = SpaDown(opt.sf)
-            GT_mat = np.load(f'Multispectral Image Dataset\{dataset_name}\GT.npy')
-            sio.savemat(f'Multispectral Image Dataset\{dataset_name}\GT.mat',{'HSI':GT_mat})
-            GT =   sio.loadmat(f'Multispectral Image Dataset\{dataset_name}\GT.mat')['HSI'][:256,:256]
-            LRHSI, HRMSI, GT = getInputImgs(GT, dataset_name,Spatialdown,srf)
+
+            if blind is True:
+                try:
+                    hrhsi = sio.loadmat(mat_save_path)
+                    GT,LRHSI,HRMSI = hrhsi["lms"], hrhsi["ms"], hrhsi["pan"]
+                except:
+                    from h5py import File
+                    hrhsi = File(mat_save_path)
+
+                    GT,LRHSI,HRMSI = np.array(hrhsi["lms"]).T, np.array(hrhsi["ms"]).T, np.array(hrhsi["pan"]).T
+                LRHSI = torch.FloatTensor(LRHSI).T.unsqueeze(0)
+                HRMSI = torch.FloatTensor(HRMSI[:,:,None]).T.unsqueeze(0)
+                LRHSI/=LRHSI.max()
+                HRMSI /= HRMSI.max()
+                GT /=GT.max()
+            else:
+                Spatialdown = SpaDown(opt.sf)
+                GT_mat = np.load(f'Multispectral Image Dataset\{dataset_name}\GT.npy')
+                sio.savemat(f'Multispectral Image Dataset\{dataset_name}\GT.mat',{'HSI':GT_mat})
+                GT =   sio.loadmat(f'Multispectral Image Dataset\{dataset_name}\GT.mat')['HSI'][:256,:256]
+                LRHSI, HRMSI, GT = getInputImgs(GT, dataset_name,Spatialdown,srf)
+
+
             LRHSI, HRMSI = LRHSI.cuda(), HRMSI.cuda()
-            Re = model(LRHSI, HRMSI, torch.FloatTensor(GT).T.unsqueeze(0).cuda())
+            Re = model(LRHSI, HRMSI)
             iv.spectra_metric(Re, GT).Evaluation()
             np.save(model_folder, Re)
             # save_checkpoint(save_folder, model, optimizer, lr, idx)
