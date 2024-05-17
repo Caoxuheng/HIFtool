@@ -48,6 +48,11 @@ def model_generator(method:str, device="cuda"):
 
 
         model = udaln(opt,sp_range)
+    elif 'FeafusFormer' in method:
+        from .FeafusFormer.net import Feafusformer
+        from .FeafusFormer.config import opt
+        sp_range = np.array([range(4)])
+        model = Feafusformer(opt,sp_range,device)
     else:
         print(f'opt.Method {method} is not defined !!!!')
 
