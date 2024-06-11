@@ -26,9 +26,9 @@ def model_generator(method:str, device="cuda"):
         model = VSR_CAS(opt).to(device)
     elif 'Fusformer' in method :
         from .Fusformer.net import MainNet
-
-        opt = None
-        model = MainNet(sf=4, channel=4,msichannel=1).to(device)
+        from .MSST.Config import argsParser
+        opt = argsParser()
+        model = MainNet(sf=opt.sf, channel=opt.hsi_channel,msichannel=opt.msi_channel).to(device)
     elif 'DCTransformer' in method :
         from .DCTransformer.net import DCT
         from .DCTransformer.Config import opt
