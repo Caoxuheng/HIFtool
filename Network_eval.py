@@ -27,9 +27,9 @@ def Eva(model, validate_data_loader,model_folder,start_epoch=100,name='recon'):
     with torch.no_grad():
         for iteration, batch in enumerate(validate_data_loader, 1):
             GT,  LRHSI, HRMSI = batch['hrhsi'].cuda(), batch['lrhsi'].cuda(), batch['hrmsi'].cuda()
-            GT /=GT.max()
-            LRHSI /=LRHSI.max()
-            HRMSI /=HRMSI.max()
+            # GT /=GT.max()
+            # LRHSI /=LRHSI.max()
+            # HRMSI /=HRMSI.max()
 
 
             # GPU显存不够请使用改代码： 将图像分为t^2块，sf为上采样参数
