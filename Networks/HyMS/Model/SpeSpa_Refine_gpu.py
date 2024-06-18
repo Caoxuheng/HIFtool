@@ -22,8 +22,8 @@ def soft_thr(X1,X2,tau,WX,WY):
 def get_ratio(R):
     r,g,b = R.T
     return r,g,b
-def Refinement(Yhim,Ymim,lam_p,lam_r,R):
-
+def Refinement(Yhim,Ymim,lam_p,lam_r,R,K):
+    msbands = Ymim.shape[-1]
     R = cp.array(R)
     print('\r\033[1;31mRefining...\033[0m', end='')
     start_time = time()
@@ -40,10 +40,7 @@ def Refinement(Yhim,Ymim,lam_p,lam_r,R):
     #                                   #
     #####################################
 
-    Phi,s_,vh_ = cupyx.scipy.sparse.linalg.svds(Y_H,10)
-    # Phi = cp.asarray(Phi)
-    # s_ = cp.asarray(s_)
-    # vh_ = cp.asarray(vh_)
+    Phi,s_,vh_ = cupyx.scipy.sparse.linalg.svds(Y_H,K)
     C = cp.diag(s_) @ vh_
     p = Phi.shape[-1]
 
@@ -73,26 +70,32 @@ def Refinement(Yhim,Ymim,lam_p,lam_r,R):
     FDVC = cp.conj(FDV)
 
 
-    srf_b, srf_g, srf_r = get_ratio(R.T)
+    # srf_b, srf_g, srf_r = get_ratio(R.T)
     #
     W_set_x = []
     W_set_y = []
     N_0 = ConvC(Y, FK=FDH, nl=nl)
     N_1 = ConvC(Y, FK=FDV, nl=nl)
-
-
-    for i in range(3):
-        W_x = cp.exp(-abs(N_0[i]) /( abs(N_0[i]).mean()) )
-        W_y = cp.exp(-abs(N_1[i]) /( abs(N_1[i]).mean()))
+    for i in range(msbands):
+        W_x = np.exp(-abs(N_0[i]) /( abs(N_0[i]).mean()) )
+        W_y = np.exp(-abs(N_1[i]) /( abs(N_1[i]).mean()))
         W_set_x.append(W_x)
         W_set_y.append(W_y)
 
+
     WX = cp.zeros([bands, nl * nc])
     WY = cp.zeros([bands, nl * nc])
+    # for i in range(bands):
+    #     WX[i] = (srf_b[i] * W_set_x[2] + srf_g[i] * W_set_x[1] + srf_r[i] * W_set_x[0])/3
+    #     WY[i] =( srf_b[i] * W_set_y[2] + srf_g[i] * W_set_y[1] + srf_r[i] * W_set_y[0])/3
     for i in range(bands):
-        WX[i] = (srf_b[i] * W_set_x[2] + srf_g[i] * W_set_x[1] + srf_r[i] * W_set_x[0])/3
-        WY[i] =( srf_b[i] * W_set_y[2] + srf_g[i] * W_set_y[1] + srf_r[i] * W_set_y[0])/3
-
+        sum_numx = 0
+        sum_numy = 0
+        for j in range(msbands):
+            sum_numx += R[j][i] * W_set_x[msbands - 1 - j]
+            sum_numy += R[j][i] * W_set_y[msbands - 1 - j]
+        WX[i] = sum_numx / msbands
+        WY[i] = sum_numy / msbands
 
     Down_C =  abs(FDH)**2+abs(FDV)**2 + 1
     I_DXDY_I = 1/Down_C
@@ -116,7 +119,7 @@ def Refinement(Yhim,Ymim,lam_p,lam_r,R):
 
 
 
-    for i in range(50):
+    for i in range(5):
 
 
         '''
