@@ -1,10 +1,11 @@
-import torch, os
-from torch import nn
+import os
 import imgvision as iv
 import numpy as np
 
 def ModeSelection(Mode:str):
     if 'unsupervised' in Mode:
+        from torch import nn
+        import torch
         from utils import SpaDown, getInputImgs
         import scipy.io as sio
         def Unsupervisedfusion(model,  model_folder,blind=True, mat_save_path=None ,opt=None, dataset_name=None,srf=None):
@@ -40,6 +41,8 @@ def ModeSelection(Mode:str):
             # save_checkpoint(save_folder, model, optimizer, lr, idx)
         fusion = Unsupervisedfusion
     elif 'supervised' in Mode:
+        from torch import nn
+        import torch
         from utils import PSNR_GPU, save_checkpoint
         def Supervisedfusion(model, training_data_loader, validate_data_loader, model_folder, optimizer, lr,
                              start_epoch=0,
@@ -116,10 +119,14 @@ def ModeSelection(Mode:str):
                 os.mkdir(save_folder)
 
             for ax, idx in enumerate([1]):
-                base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/{dataset_name}.mat')
-                GT = base['HSI']
+                try:
+                    base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/{dataset_name}.mat')
+                    GT = base['HSI']
+                except:
+                    GT = np.load(f'Multispectral Image Dataset/{dataset_name}/GT.npy')
                 LRHSI = cv2.GaussianBlur(GT, ksize=[opt.sf // 2 + 1] * 2, sigmaX=opt.sf * 0.866,
                                          sigmaY=opt.sf * 0.866)[opt.sf // 2::opt.sf, opt.sf // 2::opt.sf]
+
                 HRMSI = GT @ srf
 
                 Re = model(LRHSI, HRMSI, dataset_name)
