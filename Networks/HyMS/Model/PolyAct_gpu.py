@@ -114,12 +114,16 @@ def actication(HSI1, HSI2, HSI3, MSI, W, H_inv):
     W[row, col, 2] = w3
 
 def Modification(X_in,MSI,srf,u,data='rgb'):
+    band = X_in.shape[-1]
+    a1 = np.linspace(0.40, 0.9, band)
 
-    a1 = np.arange(0.40, 0.701, 0.01)
     if data.lower()=='pavia':
         a1 = np.arange(0.53,0.8636263,0.0036263)
     elif data.lower()=='wdcm':
         a1 = np.arange(0.383, 0.0069*128+0.383 , 0.0069)
+    elif data.lower()=='cave':
+        a1 = np.arange(0.40, 0.701, 0.01)
+
     HSI_1 = X_in
     HSI_2 = X_in * a1
     HSI_3 = X_in * a1 * a1
