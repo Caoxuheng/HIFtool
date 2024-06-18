@@ -120,7 +120,7 @@ def ModeSelection(Mode:str):
 
             for ax, idx in enumerate([1]):
                 try:
-                    base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/{dataset_name}.mat')
+                    base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/GT.mat')
                     GT = base['HSI']
                 except:
                     GT = np.load(f'Multispectral Image Dataset/{dataset_name}/GT.npy')
