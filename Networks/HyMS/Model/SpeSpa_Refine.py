@@ -66,7 +66,7 @@ def get_ratio(R):
     r,g,b = R.T
 
     return r,g,b
-def Refinement(Yhim,Ymim,lam_p,lam_r,R):
+def Refinement(Yhim,Ymim,lam_p,lam_r,R,K):
     print('\r\033[1;31mRefining...\033[0m', end='')
     msbands = Ymim.shape[-1]
     start_time = time()
@@ -83,7 +83,7 @@ def Refinement(Yhim,Ymim,lam_p,lam_r,R):
     #####################################
 
 
-    Phi,s_,vh_ = svds(Y_H,5)
+    Phi,s_,vh_ = svds(Y_H,K)
     C = np.diag(s_) @ vh_
     p = Phi.shape[-1]
 
