@@ -37,7 +37,7 @@ def model_generator(method:str, device="cuda"):
         from .HyMS.config import args
         from .HyMS.main_gpu import HyMS
 
-        model =HyMS(args)
+        model =HyMS(args,device)
         opt= args
     elif 'UDALN' in method:
         from .UDALN.net import udaln
