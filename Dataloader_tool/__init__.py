@@ -1,1 +1,1 @@
-from .loader import WDCMDataset, ChikuseiDataset, XionganDataset
+from .loader import WDCMDataset, ChikuseiDataset, XionganDataset, PaviaDataset
