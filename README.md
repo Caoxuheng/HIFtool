@@ -46,6 +46,9 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 Chikusei Dataset [![Baidu](https://img.shields.io/badge/-AI&nbsp;Studio-white?style=flat&logo=baidu&logoColor=blue)](https://aistudio.baidu.com/datasetdetail/262154)  
 Recommended Pansharpening Datasets [![Baidu](https://img.shields.io/badge/PanCollection-white?style=flat&logo=baidu&logoColor=blue)](https://github.com/liangjiandeng/PanCollection)
 
+## How to use?
+[中文说明](https://blog.csdn.net/Syuhen/article/details/139836202)
+
 ## 
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email.  
  关于HIFTool的任何问题、反馈或疑问，请随时发起issue或电子邮件与我联系。  
