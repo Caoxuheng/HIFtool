@@ -70,6 +70,6 @@ if __name__ =='__main__':
                 validate_data_loader = DataLoader(dataset=Val_data, num_workers=0, batch_size=1, shuffle=True,
                                                   pin_memory=True, drop_last=True)
                 optimizer = torch.optim.Adam(model.parameters(),lr=lr)
-                bestepoch = Fusion(model,training_data_loader,validate_data_loader,model_folder=model_folder,optimizer=optimizer,lr=lr,start_epoch=start,end_epoch=end_epoch,ckpt_step=ckpt_step,RESUME=resume)
+                bestepoch = Fusion(model,training_data_loader,validate_data_loader,model_folder='PretrainModel/'+model_folder,optimizer=optimizer,lr=lr,start_epoch=start,end_epoch=end_epoch,ckpt_step=ckpt_step,RESUME=resume)
 
 
