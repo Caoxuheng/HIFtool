@@ -236,7 +236,7 @@ class ChikuseiDataset(Dataset):
         # double(HSI), double(MSI), F, par.fft_B, downsampling_scale, S, para, 15
 
         srf = sio.loadmat('Dataloader_tool/srflib/chikusei_128_4.mat')['R']
-        hrhsi = np.load('Chikusei/GT.npy')
+        hrhsi = np.load('Multispectral Image Dataset/Chikusei/GT.npy')
         #  Generate LRHSI
         lrhsi = cv2.GaussianBlur(hrhsi, ksize=[self.ratio//2 * 2 + 1] * 2, sigmaX=self.ratio * 0.666,
                                  sigmaY=self.ratio * 0.666)[self.ratio // 2::self.ratio, self.ratio // 2::self.ratio]
