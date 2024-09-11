@@ -4,7 +4,7 @@ import torch
 class ZSL(nn.Module):
     def __init__(self,args):
         super(ZSL, self).__init__()
-        a,b = args.p,args.MSI_channel
+        a,b = args.p,args.msi_channel
         self.conv1 = nn.Sequential(        
             nn.Conv2d(a+b, 128-b, 3, 1, 1),     
             nn.LeakyReLU(negative_slope=0.2, inplace=False), 
@@ -39,7 +39,7 @@ class ZSL(nn.Module):
         coeff = torch.mm(basecoeff.T, basecoeff)
         coeff = torch.Tensor(coeff)[None,None]
         self.coeff = torch.repeat_interleave(coeff, a,0)
-        self.Upsample_4 = nn.ConvTranspose2d(bias=None,stride=4,padding=21,output_padding=1,groups=args.channel,dilation=1)
+        self.Upsample_4 = nn.ConvTranspose2d(bias=None,stride=4,padding=21,output_padding=1,groups=args.hsi_channel,dilation=1)
         self.Upsample_4.weight.data = self.coeff
         self.Upsample_4.requires_grad_(False)
 
