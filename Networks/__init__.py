@@ -45,14 +45,19 @@ def model_generator(method:str, device="cuda"):
 
         # sp_range = [list(range(30)),list(range(13,50)),list(range(41,84)),list(range(68,128))]
         sp_range = np.array([[0,30],[13, 50], [41, 84], [68, 127]])
-
-
         model = udaln(opt,sp_range)
     elif 'FeafusFormer' in method:
         from .FeafusFormer.net import Feafusformer
         from .FeafusFormer.config import opt
         sp_range = np.array([range(4)])
         model = Feafusformer(opt,sp_range,device)
+    elif 'ZSL' in method:
+        from .ZSL.net import ZSL
+        from .ZSL.config import opt
+
+        model = ZSL(opt)
+
+    
     else:
         print(f'opt.Method {method} is not defined !!!!')
 
