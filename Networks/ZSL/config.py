@@ -8,5 +8,6 @@ parser.add_argument('--init_lr1', type=float, default=1e-4, help='-')
 parser.add_argument('--init_lr2', type=float, default=5e-4, help='=')
 parser.add_argument('--decay_power', type=float, default=1.5, help='=')
 parser.add_argument('--BATCH_SIZE', type=int, default=64, help='=')
+parser.add_argument('--training_size', type=int, default=32, help='=')
 
 opt = parser.parse_args()
