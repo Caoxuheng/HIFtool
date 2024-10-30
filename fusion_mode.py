@@ -31,7 +31,7 @@ def ModeSelection(Mode:str):
                 Spatialdown = SpaDown(opt.sf)
                 GT_mat = np.load(f'Multispectral Image Dataset\{dataset_name}\GT.npy')
                 sio.savemat(f'Multispectral Image Dataset\{dataset_name}\GT.mat',{'HSI':GT_mat})
-                GT =   sio.loadmat(f'Multispectral Image Dataset\{dataset_name}\GT.mat')['HSI'][:256,:256]
+                GT =   sio.loadmat(f'Multispectral Image Dataset\{dataset_name}\GT.mat')['HSI']
                 LRHSI, HRMSI, GT = getInputImgs(GT, dataset_name,Spatialdown,srf)
             LRHSI, HRMSI = LRHSI.cuda(), HRMSI.cuda()
             Re = model(LRHSI, HRMSI)
