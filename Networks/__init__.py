@@ -49,7 +49,8 @@ def model_generator(method:str, device="cuda"):
     elif 'FeafusFormer' in method:
         from .FeafusFormer.net import Feafusformer
         from .FeafusFormer.config import opt
-        sp_range = np.array([range(4)])
+        sp_range = [list(range(30)),list(range(13,50)),list(range(41,84)),list(range(68,128))]
+        # sp_range = np.array([range(4)])
         model = Feafusformer(opt,sp_range,device)
     elif 'ZSL' in method:
         from .ZSL.net import ZSL
