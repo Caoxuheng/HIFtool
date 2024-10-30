@@ -29,11 +29,13 @@ def ModeSelection(Mode:str):
                 GT /=GT.max()
             else:
                 Spatialdown = SpaDown(opt.sf)
+                srf = sio.loadmat('Dataloader_tool/srflib/chikusei_128_4.mat')['R']
                 GT_mat = np.load(f'Multispectral Image Dataset\{dataset_name}\GT.npy')
                 sio.savemat(f'Multispectral Image Dataset\{dataset_name}\GT.mat',{'HSI':GT_mat})
                 GT =   sio.loadmat(f'Multispectral Image Dataset\{dataset_name}\GT.mat')['HSI']
                 LRHSI, HRMSI, GT = getInputImgs(GT, dataset_name,Spatialdown,srf)
             LRHSI, HRMSI = LRHSI.cuda(), HRMSI.cuda()
+            
             Re = model(LRHSI, HRMSI)
             iv.spectra_metric(Re, GT).Evaluation()
             np.save(model_folder, Re)
@@ -105,7 +107,7 @@ def ModeSelection(Mode:str):
                     best_epoch = epoch
                     save_checkpoint(model_folder, model, optimizer, lr, epoch)
 
-                    print("             learning rate:º%f" % (optimizer.param_groups[0]['lr']))
+                    print("             learning rate:?%f" % (optimizer.param_groups[0]['lr']))
                     print('             validate loss: {:.7f}'.format(v_loss))
                     print('             PSNR loss: {:.7f}'.format(psnr))
             return best_epoch
