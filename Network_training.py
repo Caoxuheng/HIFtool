@@ -6,11 +6,11 @@ import os
 if __name__ =='__main__':
     # ========================Select fusion mode=====================
     case_lst = ['model','unsupervised','supervised']
-    case = case_lst[0]
+    case = case_lst[1]
     Fusion  = ModeSelection(case)
 
     # ========================Build Network==========================
-    Method = 'HyMS'
+    Method = 'FeafusFormer'
     model, opt = model_generator(Method,'cuda')
 
     # ========================Dataset Setting========================
@@ -43,7 +43,7 @@ if __name__ =='__main__':
                 sp_matrix = psf @ psf.T
                 model.equip(srf,sp_matrix)
 
-            Fusion(model,model_folder=model_folder,blind=True,mat_save_path= mat_save_path ,dataset_name=None,srf=None)
+            Fusion(model,model_folder=model_folder,blind=True,mat_save_path= mat_save_path ,opt=opt,dataset_name=dataset_name,srf=None)
 
         else:
             # Training Setting
