@@ -12,7 +12,8 @@ def ModeSelection(Mode:str):
             if not os.path.isdir(model_folder):
                 os.mkdir(model_folder)
 
-            if blind is True:
+            
+            if blind is True and dataset_name not in ['chikusei','Pavia','xiongan']:
                 try:
                     hrhsi = sio.loadmat(mat_save_path)
                     GT,LRHSI,HRMSI = hrhsi["lms"], hrhsi["ms"], hrhsi["pan"]
@@ -32,8 +33,6 @@ def ModeSelection(Mode:str):
                 sio.savemat(f'Multispectral Image Dataset\{dataset_name}\GT.mat',{'HSI':GT_mat})
                 GT =   sio.loadmat(f'Multispectral Image Dataset\{dataset_name}\GT.mat')['HSI'][:256,:256]
                 LRHSI, HRMSI, GT = getInputImgs(GT, dataset_name,Spatialdown,srf)
-
-
             LRHSI, HRMSI = LRHSI.cuda(), HRMSI.cuda()
             Re = model(LRHSI, HRMSI)
             iv.spectra_metric(Re, GT).Evaluation()
