@@ -50,6 +50,15 @@ def SSIM_GPU(r_img,f_img,k1=0.01, k2=0.03):
     return SSIM.mean()
 
 # Degradation part
+def fspecial(kernel_type, kernel_size, sigma=None):
+    from scipy import signal
+    if kernel_type == 'gaussian':
+        kernel = signal.windows.gaussian(kernel_size, sigma)
+    elif kernel_type == 'average':
+        kernel = np.ones((kernel_size, kernel_size)) / kernel_size ** 2
+    elif kernel_type == 'laplacian':
+        kernel = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]])
+    return kernel
 def getGaussiankernel(ksize,sigma):
     x = torch.arange( -(ksize-1)//2,(ksize-1)//2+1)
     kernel = torch.exp(-1/2*torch.pow(x/sigma,2))
