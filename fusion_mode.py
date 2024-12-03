@@ -114,6 +114,7 @@ def ModeSelection(Mode:str):
         fusion = Supervisedfusion
     elif 'model' in Mode:
         import cv2
+        import scipy.io as sio 
         def modelfusion(model, opt, model_folder, dataset_name, srf):
             save_folder = model_folder + '/'
             if not os.path.isdir(save_folder):
