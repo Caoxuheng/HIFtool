@@ -23,9 +23,12 @@ if __name__ =='__main__':
         '''
         Model-based methods come with the requirements of [Spectral response function] and [point spread function]
         '''
+        import cv2
+        from utils import fspecial
+
         # Load [Spectral response function] and [point spread function]
-        srf = sio.loadmat('Dataloader_tool/srflib/chikusei_128_4.mat')['R']
-        psf = None
+        srf = sio.loadmat('Dataloader_tool/srflib/chikuseisrf.mat')['R']
+        psf =fspecial('gaussian',opt.sf//2+1,opt.sf*0.886)
         # Config model
         model.equip(srf,psf)
         Fusion(model,opt,model_folder,dataset_name,srf)
