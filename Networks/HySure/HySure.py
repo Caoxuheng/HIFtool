@@ -53,7 +53,7 @@ class HySure():
         self.R = srf.T
         self.psf = psf
 
-    def __call__(self, LR_HSI, HR_MSI):
+    def __call__(self, LR_HSI, HR_MSI,dataset_name):
         start_time = time()
         '''
         I. Precomputations. 
