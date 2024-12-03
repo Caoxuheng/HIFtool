@@ -41,9 +41,9 @@ def model_generator(method:str, device="cuda"):
         opt= args
     elif 'HySure' in method:
         from .HySure.config import args
-        from .HySure import HySure
+        from .HySure.HySure import HySure
 
-        model =HySure(args,device)
+        model =HySure(args)
         opt= args
     elif 'UDALN' in method:
         from .UDALN.net import udaln
