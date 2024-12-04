@@ -311,7 +311,7 @@ class PaviaDataset(Dataset):
         return hrhsi, lrhsi, hrmsi
     def getData_(self):
         srf = sio.loadmat('Dataloader_tool/srflib/chikuseisrf.mat')['R']
-        hrhsi = sio.loadmat(self.mat_save_path )['HSI']
+        hrhsi = sio.loadmat(self.mat_save_path )['GT']
         import  cv2
         #hrhsi = cv2.copyMakeBorder(hrhsi,0,64,0,64,cv2.BORDER_REFLECT)
         # hrhsi = np.random.rand(2335, 2517, 128)
