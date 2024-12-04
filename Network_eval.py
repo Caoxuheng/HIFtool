@@ -90,7 +90,7 @@ if __name__=='__main__':
 
     # Dataset Setting
     dataset_name = 'QB'
-    model_folder = 'PretrainModel/' + dataset_name + '/'+ Method +'/' 
+     model_folder = 'PretrainModel/' + Method + '/'+ dataset_name +'/'
     # Training Setting
     Batch_size = 1
     start =400
