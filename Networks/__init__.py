@@ -9,6 +9,17 @@ def model_generator(method:str, device="cuda"):
         from .PKLNet.Config import args as opt
         num_iterations = int(method.split('_')[-1])
         model = PKLNet(sf=opt.sf,in_c=opt.inchannel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
+    elif 'UTAL' in method:
+        
+        from .UTAL.net import ThreeBranch_Net,Meta_train
+        from .PSRT.config import args_parser
+        opt = args_parser()
+
+        if 'meta' in method:
+            model =  Meta_train(opt,device)
+        else:
+            model = ThreeBranch_Net(opt,device).to(device)
+
     elif 'PSRT' in method:
         from .PSRT.net import PSRTnet
         from  .PSRT.config import args_parser
