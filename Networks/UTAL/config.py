@@ -15,5 +15,16 @@ def args_parser():
     parser.add_argument('--KS_2', type=int, default=3)
     parser.add_argument('--KS_3', type=int, default=3)
 
+
+    # Meta-Train
+    parser.add_argument('--pre_srf', type=str, default='./knowledge/P_N_V2.mat',help='A predefine spectral response function[for mat format]')
+    parser.add_argument('--pre_srf_key', type=str, default='P',
+                        help='the key of pre_srf.mat')
+    parser.add_argument('-- fusion_model_path', type=str, default='',
+                        help='the path of well-trained supervised network where u store')
+    parser.add_argument('-- save_path', type=str, default='',
+                        help='the path of well-trained unsupervised network where ud store')
+
+
     args = parser.parse_args()
     return args
