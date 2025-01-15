@@ -12,7 +12,7 @@ def model_generator(method:str, device="cuda"):
     elif 'UTAL' in method:
         
         from .UTAL.net import ThreeBranch_Net,Meta_train
-        from .PSRT.config import args_parser
+        from .UTAL.config import args_parser
         opt = args_parser()
 
         if 'meta' in method:
