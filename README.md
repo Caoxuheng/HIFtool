@@ -7,6 +7,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+> **[2025.01.17]**  Compatible with CAVE and HARVARD datasets (Network_training_VL.py).
+
 > **[2025.01.15]**  UALT, a  supervised-unsupervised combined method, has been added to our collection of SOTA algorithms.     
 
 > **[2024.05.16]**  Pre-trained models on the QB dataset in [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection) are released.     
