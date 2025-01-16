@@ -74,11 +74,12 @@ class Dataloader():
         self.opt = opt
     def load(self,index):
         if self.name.upper() =='CAVE':
-            base = sio.loadmat('Multispectral Image Dataset/CAVE/'+str(index)+'.mat')
+            base = sio.loadmat('F:/CAVE/'+str(index)+'.mat')
             key = list(base.keys())[-1]
             Ground_Truth = base[key]
+
         elif self.name.upper()=='HARVARD':
-            base = sio.loadmat('Multispectral Image Dataset/HARVARD/'+str(index)+'.mat')
+            base = sio.loadmat('F:/HARVARD/'+str(index)+'.mat')
             Ground_Truth = base['ref']
             Ground_Truth = Ground_Truth / Ground_Truth.max()
             Ground_Truth = Ground_Truth[:1024, :1024]
@@ -112,7 +113,7 @@ class RandomCrop(object):
     def __call__(self, clean, noisy,lr,index_):
 
         h, w , _ = clean.shape
-        sf = 4
+        sf = self.factor
         i,  j, h, w = self.get_params(clean, self.size,index_)
         # print(index_,i,j)
         return (clean[i : i + h,  j : j+w, :], noisy[i : i + h ,  j : j+w, :], lr[i//sf : i//sf + h//sf ,  j//sf : j//sf+w//sf, :])
@@ -123,16 +124,18 @@ class RandomCrop(object):
 class Large_dataset(data.Dataset):
 
     def __init__(self, opt,patch_size,name='CAVE',type='train', crop=True):  # , root, fn, crop=True, loader=default_loader):
-        SRF = np.load('Dataloader_tool/srflib/NikonD700.npy')
+        SRF = np.load('./Dataloader_tool/srflib/NikonD700.npy')
         self.HR_list = []
         self.RGB_list = []
         self.LR_list = []
         Spatialdown = SpaDown(opt.sf, predefine=False)
         if name.upper() =='CAVE':
             self.n = 512 // patch_size
-            test_list = [1,2,7,8,9,10,11,15,19,23,26,27]
-            val_list = [14,18,28]
-            train_set= list(set(range(1,32))-set(test_list))-set(val_list)
+            # test_list = [1,2,7,8,9,10,11,15,19,23,26,27]
+            test_list = [1,2,7,8,9,10,11,14,15,20,26,27]
+
+            val_list = [16,18,28]
+            train_set= list(set(range(1,32))-set(test_list)-(set(val_list)))
             if type=='train':
                 data_set = train_set
             elif type =='eval':
@@ -151,7 +154,7 @@ class Large_dataset(data.Dataset):
         self.crop = crop
         self.factor = opt.sf
         if crop:
-            self.crop_LR = RandomCrop(patch_size)
+            self.crop_LR = RandomCrop(patch_size,factor=opt.sf)
 
         else:
             self.crop_LR = False
@@ -164,6 +167,7 @@ class Large_dataset(data.Dataset):
         LR = self.LR_list[index]
 
         if self.crop:
+
             HR, RGB, LR = self.crop_LR(HR, RGB, LR,index_%(self.n**2))
 
         # -----------------------------------------------------
@@ -171,6 +175,7 @@ class Large_dataset(data.Dataset):
         LR = np.transpose(LR, [2, 0, 1])
         HR = np.transpose(HR, [2, 0, 1])
         RGB = np.transpose(RGB, [2, 0, 1])
+
         HR = torch.FloatTensor(HR)
         RGB = torch.FloatTensor(RGB)
         LR = torch.FloatTensor(LR)
@@ -178,7 +183,5 @@ class Large_dataset(data.Dataset):
 
     def __len__(self):
         return self.count*(self.n**2)
-
-
 
 
