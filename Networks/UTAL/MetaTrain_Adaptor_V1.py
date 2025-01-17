@@ -19,15 +19,14 @@ def LR_Decay(optimizer, n,lr):
 
 
 
-
-
-def meta_train_adaptor(GT,opt,device):
+def meta_train_adaptor(GT,idx,opt,device,fusion_model):
     lr = 5e-5
     lr_da = 1e-4
     lr_dc = 1e-4
 
-    fusion_model = torch.load(opt.fusion_model_path)
-    fusion_model = fusion_model.to(device)
+    fusion_model_P = torch.load(opt.fusion_model_path)
+    fusion_model.load_state_dict(fusion_model_P['net'])
+
 
     factor = opt.sf
     KS = 32
@@ -85,11 +84,11 @@ def meta_train_adaptor(GT,opt,device):
         # Generate the HR_MSI
         HR_MSI = torch.matmul(P_re, GT.reshape(-1, GT.shape[1], GT.shape[2]*GT.shape[3])).reshape(-1, 3, GT.shape[2], GT.shape[3])
         # Generate the UP_HSI
-        LR_HSI = Variable(LR_HSI.detach(), requires_grad=False).type(torch.cuda.FloatTensor)
-        HR_MSI = Variable(HR_MSI.detach(), requires_grad=False).type(torch.cuda.FloatTensor)
-
+        LR_HSI = Variable(LR_HSI.detach(), requires_grad=False).to(device)
+        HR_MSI = Variable(HR_MSI.detach(), requires_grad=False).to(device)
+        fusion_model.to(device)
         with torch.no_grad():
-            out = fusion_model(HR_MSI,LR_HSI)
+            out = fusion_model(LR_HSI,HR_MSI)
 
         param_K = list(downs.named_parameters())
         K = param_K[0][1][0].detach().unsqueeze(0).repeat(GT.shape[0], 1, 1, 1)
@@ -165,9 +164,9 @@ def meta_train_adaptor(GT,opt,device):
 
 
         if epoch%10 == 9:
-            torch.save(model, opt.save_path+'_model_'+str(int(epoch/10))+'.pth')
-            torch.save(downs, opt.save_path+'_Donwspa_'+str(int(epoch/10))+'.pth')
-            torch.save(down_spc, opt.save_path+'_Donwspc_'+str(int(epoch/10))+'.pth')
+            torch.save(model, opt.save_path+f'/{idx}_model_'+str(int(epoch/10))+'.pth')
+            torch.save(downs, opt.save_path+f'/{idx}_Donwspa_'+str(int(epoch/10))+'.pth')
+            torch.save(down_spc, opt.save_path+f'/{idx}_Donwspc_'+str(int(epoch/10))+'.pth')
 
 
 
