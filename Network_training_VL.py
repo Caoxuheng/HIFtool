@@ -74,6 +74,12 @@ def train(model,training_data_loader, validate_data_loader,model_folder,optimize
             print('             validate loss: {:.7f}'.format(v_loss))
             print('             PSNR loss: {:.7f}'.format(psnr ))
     return best_epoch
+def meta_train(model, training_data_loader):
+    # ============Epoch Train=============== #
+    for iteration, batch in enumerate(training_data_loader, 1):
+        GT, LRHSI, HRMSI = batch[0].cuda(), batch[1].cuda(), batch[2].cuda()
+        model(GT,iteration)
+
 
 def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_name):
     import imgvision as iv
@@ -240,10 +246,12 @@ if __name__=='__main__':
     patch_size = 256 #Crop Ps
 
     # Scheme Setting
-    General=0
-    bestepoch=550
-    Specific=True
+    General=True
+    Meta = False
+    Specific=False
 
+    #  pre-train config
+    bestepoch=0
     resume=False
     start=0
 
@@ -258,6 +266,12 @@ if __name__=='__main__':
                                           pin_memory=True, drop_last=True)
         optimizer = torch.optim.Adam(model.parameters(),lr=lr)
         bestepoch = train(model,training_data_loader,validate_data_loader,model_folder=model_folder,optimizer=optimizer,lr=lr,start_epoch=start,end_epoch=end_epoch,ckpt_step=ckpt_step,RESUME=resume)
-
+    if Meta:
+        Train_data = Large_dataset(opt, patch_size,dataset_name ,type='test')
+       
+        training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=1, shuffle=True,
+                                      pin_memory=True, drop_last=False)
+         meta_train(model, training_data_loader)
+        
     if Specific:
         evalu_model_specific(model, opt, model_folder, bestepoch, end_epoch, dataset_name)
