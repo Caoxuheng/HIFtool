@@ -25,6 +25,9 @@ def args_parser():
     parser.add_argument('--save_path', type=str, default='UTAL/cave/meta',
                         help='the path of well-trained unsupervised network where ud store')
 
+    # Specific learning
+    parser.add_argument('--save_path_specific', type=str, default='',
+                        help='the path of well-trained unsupervised network where ud store')
 
     args = parser.parse_args()
     return args
