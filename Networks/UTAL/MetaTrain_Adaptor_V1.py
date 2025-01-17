@@ -170,6 +170,92 @@ def meta_train_adaptor(GT,idx,opt,device,fusion_model):
 
 
 
+def specific_learning_UTAL(LR_HSI, HR_MSI, opt, device):
+    Stages = 40
+    num_steps = 10
+    lr = 1e-3
+    lr_dc = 1e-4
+    lr_da = 1e-4
+    WD = 1e-4
+    WD_Dspa = 1e-4
+
+    # Define supervised network
+    model_path = torch.load(opt.fusion_model_path)
+    model = ThreeBranch_Net(opt, device)
+    model.state_dict(model_path['net'])
+
+    L1Loss = nn.L1Loss()
+    # Learnable spectral downsampler
+    P_N = sio.loadmat(opt.pre_srf)
+    P = torch.from_numpy(P_N[opt.pre_srf_key])
+    down_spc = L_Dspec(opt.hsi_channel, opt.msi_channel, P).to(device)
+    optimizer_spc = torch.optim.Adam(down_spc.parameters(), lr=lr_dc, weight_decay=1e-5)
+
+    # Learnable spatial downsampler
+    KS = 32
+    kernel = torch.rand(1, 1, KS, KS)
+    kernel[0, 0, :, :] = torch.from_numpy(get_kernel(opt.sf, 'gauss', 0, KS, sigma=3))
+    Conv = nn.Conv2d(1, 1, KS, opt.sf)
+    Conv.weight = nn.Parameter(kernel)
+    dow = nn.Sequential(nn.ReplicationPad2d(int((KS - opt.sf) / 2.)), Conv)
+    downs = Apply(dow, 1).to(device)
+    optimizer_d = torch.optim.Adam(downs.parameters(), lr=lr_da, weight_decay=WD_Dspa)
+
+    # Loading the Meta-trained Adaptor
+    Net = torch.load(opt.save_path_specific)
+    optimizer = torch.optim.Adam([{'params': Net.parameters(), 'initial_lr': lr}], lr=lr, weight_decay=WD)
+    with torch.no_grad():
+        LR_MSI_spc = down_spc(LR_HSI)
+        LR_MSI_spa = downs(HR_MSI)
+        Input = model(HR_MSI, LR_HSI)
+
+    out = Input
+
+    for step in range(Stages):
+
+        for i in range(num_steps):
+            out_d = downs(out.detach())
+            optimizer_d.zero_grad()
+            loss_d = L1Loss(out_d, LR_HSI)
+            loss_d.backward()
+            optimizer_d.step()
+
+        optimizer_d.zero_grad()
+
+        for i in range(num_steps):
+            out_spc = down_spc(out.detach())
+            optimizer_spc.zero_grad()
+            loss_spc = L1Loss(out_spc, HR_MSI)
+            loss_spc.backward()
+            optimizer_spc.step()
+
+        optimizer_spc.zero_grad()
+
+        param_K = list(downs.named_parameters())
+        K = torch.from_numpy(param_K[0][1][0].detach().cpu().numpy()).unsqueeze(0).cuda()
+        param_P = list(down_spc.named_parameters())
+        P = param_P[0][1].detach().permute(1, 0).unsqueeze(0).unsqueeze(0)  # .repeat(GT.shape[0], 1, 1, 1)
+
+        for i in range(num_steps):
+            out = Net(Input, K, P)
+
+            D_HSI = downs(out)
+            D_MSI_spa = downs(HR_MSI)
+            D_MSI = down_spc(out)
+            Loss = L1Loss(D_HSI, LR_HSI) + L1Loss(D_MSI, HR_MSI)  # + L1Loss(D_MSI_spa, LR_MSI_spc)
+
+            optimizer.zero_grad()
+            optimizer_d.zero_grad()
+            optimizer_spc.zero_grad()
+
+            Loss.backward()
+
+            optimizer.step()
+            optimizer_d.step()
+            optimizer_spc.step()
+
+    out = torch.squeeze(out)
+    return out
 
 
 
