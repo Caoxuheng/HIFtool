@@ -74,12 +74,12 @@ class Dataloader():
         self.opt = opt
     def load(self,index):
         if self.name.upper() =='CAVE':
-            base = sio.loadmat('F:/CAVE/'+str(index)+'.mat')
+            base = sio.loadmat('Multispectral Image Dataset/CAVE/'+str(index)+'.mat')
             key = list(base.keys())[-1]
             Ground_Truth = base[key]
 
         elif self.name.upper()=='HARVARD':
-            base = sio.loadmat('F:/HARVARD/'+str(index)+'.mat')
+            base = sio.loadmat('Multispectral Image Dataset/HARVARD/'+str(index)+'.mat')
             Ground_Truth = base['ref']
             Ground_Truth = Ground_Truth / Ground_Truth.max()
             Ground_Truth = Ground_Truth[:1024, :1024]
@@ -183,5 +183,4 @@ class Large_dataset(data.Dataset):
 
     def __len__(self):
         return self.count*(self.n**2)
-
 
