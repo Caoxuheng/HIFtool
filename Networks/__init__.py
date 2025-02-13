@@ -11,12 +11,15 @@ def model_generator(method:str, device="cuda"):
         model = PKLNet(sf=opt.sf,in_c=opt.inchannel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
     elif 'UTAL' in method:
         
-        from .UTAL.net import ThreeBranch_Net,Meta_train
+        from .UTAL.net import ThreeBranch_Net,Meta_train, Specific_Learning
         from .UTAL.config import args_parser
         opt = args_parser()
 
         if 'meta' in method:
             model =  Meta_train(opt,device)
+        elif 'specific' in method:
+            model =  Specific_Learning(opt,device)
+            print('specific learning')
         else:
             model = ThreeBranch_Net(opt,device).to(device)
 
