@@ -170,7 +170,7 @@ def meta_train_adaptor(GT,idx,opt,device,fusion_model):
 
 
 
-def specific_learning_UTAL(LR_HSI, HR_MSI, opt, device):
+def specific_learning_UTAL(LR_HSI, HR_MSI,GT,iteration, opt, device):
     Stages = 40
     num_steps = 10
     lr = 1e-3
@@ -181,13 +181,25 @@ def specific_learning_UTAL(LR_HSI, HR_MSI, opt, device):
 
     # Define supervised network
     model_path = torch.load(opt.fusion_model_path)
-    model = ThreeBranch_Net(opt, device)
+    model = ThreeBranch_Net(opt, device).to(device)
     model.state_dict(model_path['net'])
+    #
+    # with torch.no_grad():
+    #     Input = model(HR_MSI, LR_HSI)
+
+    Input =torch.FloatTensor(np.load(f'UTAL/{iteration}.npy'))[None].permute(0,3,1,2).to(device)
+    # plt.subplot(1,2,1),plt.imshow(GT[0,0].detach().cpu())
+    # plt.subplot(1,2,2),plt.imshow(Input[0,0].detach().cpu())
+    # plt.show()
+    # print(
+    #     f'\r{0}:\t{iv.spectra_metric(Input[0].detach().cpu().permute(1, 2, 0).numpy(), GT[0].detach().cpu().permute(1, 2, 0).numpy()).get_Evaluation()}',
+    #     end='')
 
     L1Loss = nn.L1Loss()
+
     # Learnable spectral downsampler
     P_N = sio.loadmat(opt.pre_srf)
-    P = torch.from_numpy(P_N[opt.pre_srf_key])
+    P = torch.FloatTensor(P_N[opt.pre_srf_key])
     down_spc = L_Dspec(opt.hsi_channel, opt.msi_channel, P).to(device)
     optimizer_spc = torch.optim.Adam(down_spc.parameters(), lr=lr_dc, weight_decay=1e-5)
 
@@ -202,12 +214,11 @@ def specific_learning_UTAL(LR_HSI, HR_MSI, opt, device):
     optimizer_d = torch.optim.Adam(downs.parameters(), lr=lr_da, weight_decay=WD_Dspa)
 
     # Loading the Meta-trained Adaptor
-    Net = torch.load(opt.save_path_specific)
+    Net= FineNet_SelfAtt_InputK_P_V2().to(device)
+    Net = torch.load(f'UTAL_meta/chikusei/{iteration}_model_9.pth')
+    # Net.load_state_dict(path['net'])
     optimizer = torch.optim.Adam([{'params': Net.parameters(), 'initial_lr': lr}], lr=lr, weight_decay=WD)
-    with torch.no_grad():
-        LR_MSI_spc = down_spc(LR_HSI)
-        LR_MSI_spa = downs(HR_MSI)
-        Input = model(HR_MSI, LR_HSI)
+
 
     out = Input
 
@@ -240,7 +251,7 @@ def specific_learning_UTAL(LR_HSI, HR_MSI, opt, device):
             out = Net(Input, K, P)
 
             D_HSI = downs(out)
-            D_MSI_spa = downs(HR_MSI)
+            # D_MSI_spa = downs(HR_MSI)
             D_MSI = down_spc(out)
             Loss = L1Loss(D_HSI, LR_HSI) + L1Loss(D_MSI, HR_MSI)  # + L1Loss(D_MSI_spa, LR_MSI_spc)
 
@@ -254,6 +265,9 @@ def specific_learning_UTAL(LR_HSI, HR_MSI, opt, device):
             optimizer_d.step()
             optimizer_spc.step()
 
+
+
+        print(f'\r{step}:\t{iv.spectra_metric(out[0].detach().cpu().permute(1, 2, 0).numpy(), GT[0].detach().cpu().permute(1, 2, 0).numpy()).get_Evaluation()}',end='')
     out = torch.squeeze(out)
     return out
 
