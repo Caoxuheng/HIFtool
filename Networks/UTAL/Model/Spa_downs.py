@@ -12,7 +12,7 @@ class Spa_Downs(nn.Module):
         #factor:the times of downsample
 		
         super(Spa_Downs, self).__init__()
-        kernels = sio.loadmat('f_set.mat')
+        kernels = sio.loadmat('Networks\UTAL\Model\f_set.mat')
 
         assert phase in [0, 0.5], 'phase should be 0 or 0.5'
 
