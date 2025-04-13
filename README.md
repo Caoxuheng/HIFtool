@@ -7,6 +7,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+> **[2025.04.11]**  PSTUN, a new supervised learning method, has been added to our collection of SOTA algorithms.
+
 > **[2025.01.17]**  Compatible with CAVE and HARVARD datasets (Network_training_VL.py).
 
 > **[2025.01.15]**  UALT, a  supervised-unsupervised combined method, has been added to our collection of SOTA algorithms.     
@@ -44,6 +46,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:SL2o22p2NUQJ:scholar.google.com/&output=citation&scisdr=ClGT3Z9GGAA:AFWwaeYAAAAAZfzrHSbuijFA2riDQJZEXZr1GnE&scisig=AFWwaeYAAAAAZfzrHYGTYyXUa-y0H73FZG5JTXM&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]  |[UMC2FF](https://github.com/JiaxinLiCAS/UMC2FF_GRSL)[*On hold*] |  
 | [DCTransformer](https://github.com/qingma2016/DCTransformer) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:yGUmoYD5aNoJ:scholar.google.com/&output=citation&scisdr=ClG_1Q4VGAA:AFWwaeYAAAAAZfzrkFunjs4brfHK-MujBieQ_Wo&scisig=AFWwaeYAAAAAZfzrkGWmRph52cvPtHZn16FAByQ&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ] |[ZSL](https://github.com/renweidian/ZSL)[*On hold*] |
 | [UALT](https://github.com/JiangtaoNie/UAL)[[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:HjlfSoeCMRoJ:scholar.google.com/&output=citation&scisdr=ClEoKphsELz5qTObULs:AFWwaeYAAAAAZ4edSLt5dkm5DMsYBDU6FvjYK2c&scisig=AFWwaeYAAAAAZ4edSHnUKpsQW7VtulKeI1OBYr0&scisf=3&ct=citation&cd=-1&hl=ja)  ]   | |
+| [PSTUN](https://github.com/XWangBin/PSTUN)[*On hold*] |
 </td></tr> </table>   
 
 ## Dataset  
