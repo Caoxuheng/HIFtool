@@ -7,6 +7,9 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+
+> **[2025.10.02]**  CaFormer, a supervised-unsupervised combined method, has been added to our collection of SOTA algorithms.
+
 > **[2025.04.11]**  PSTUN, a new supervised learning method, has been added to our collection of SOTA algorithms.
 
 > **[2025.01.17]**  Compatible with CAVE and HARVARD datasets (Network_training_VL.py).
