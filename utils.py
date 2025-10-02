@@ -24,7 +24,7 @@ def save_checkpoint(model_folder, model, optimizer, lr, epoch):  # save model fu
         "lr":lr
     }
     if not os.path.isdir(model_folder):
-        os.mkdir(model_folder)
+        os.makedirs(model_folder,exist_ok=True)
     torch.save(checkpoint, model_out_path)
     # print("Checkpoint saved to {}".format(model_out_path))
 
