@@ -4,7 +4,7 @@ import time
 import torch
 from torch import nn
 import numpy as np
-
+import scipy.io as sio
 def train(model,training_data_loader, validate_data_loader,model_folder,optimizer,lr,start_epoch=0,end_epoch=2000,ckpt_step=50,RESUME=False,meta=False):
     PLoss=nn.L1Loss()
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=100,
@@ -112,12 +112,12 @@ def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_nam
         size = 1024
  
     for ax, idx in enumerate(lst):
-        idx-=1
+        
         mx=0
         model.load_state_dict(checkpoint['net'])
         model = model.cuda()
         Spatialdown = SpaDown(opt.sf, predefine=None)
-        base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/GT.mat')
+        base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/{idx}.mat')
         GT = base['HSI']
         LRHSI, HRMSI, GT_ = getInputImgs(GT, dataset_name, Spatialdown,np.load(opt.srfpath))
         GT = torch.FloatTensor(GT_).T.unsqueeze(0).cuda()
@@ -218,4 +218,5 @@ if __name__=='__main__':
 
     if Specific:
         evalu_model_specific(model, opt, model_folder, bestepoch, end_epoch, dataset_name)
+
 
