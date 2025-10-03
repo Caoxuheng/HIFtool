@@ -10,7 +10,9 @@ def train(model,training_data_loader, validate_data_loader,model_folder,optimize
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=100,
                                                    gamma=0.5)
     print('Start training...')
-
+    import os 
+    if not os.path.isdir(model_folder):
+        os.makedirs(model_folder,exist_ok=True)
     if RESUME:
         path_checkpoint = model_folder+"{}.pth".format(start_epoch)
         checkpoint = torch.load(path_checkpoint)
@@ -90,7 +92,7 @@ def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_nam
     import imgvision as iv
     import os
     from einops import rearrange
-    from data import SpaDown,getInputImgs,SpeDown
+    from utils import SpaDown,getInputImgs,SpeDown
 
     patch_size = 512
     save_folder =model_folder+ dataset_name +'/'
@@ -108,16 +110,16 @@ def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_nam
         lst=[ 74, 62, 71, 70, 57, 66, 75, 2, 35, 34, 23, 59, 29, 65, 28, 8, 43, 63, 42, 19, 13, 33,
                              20,36, 9]
         size = 1024
-    lx = [0,0,0,0,0]
+ 
     for ax, idx in enumerate(lst):
+        idx-=1
         mx=0
         model.load_state_dict(checkpoint['net'])
         model = model.cuda()
         Spatialdown = SpaDown(opt.sf, predefine=None)
-
-        LRHSI, HRMSI, GT_ = getInputImgs(opt, idx, Spatialdown)
-
-        # LRHSI, HRMSI, GT_ = getInputImgs(opt,dataset_name, idx, Spatialdown)
+        base = sio.loadmat(f'Multispectral Image Dataset/{dataset_name}/GT.mat')
+        GT = base['HSI']
+        LRHSI, HRMSI, GT_ = getInputImgs(GT, dataset_name, Spatialdown,np.load(opt.srfpath))
         GT = torch.FloatTensor(GT_).T.unsqueeze(0).cuda()
         LRHSI,HRMSI = LRHSI.cuda(), HRMSI.cuda()
         optimizer = torch.optim.Adam(model.parameters(),lr = 3e-5)
@@ -170,28 +172,28 @@ if __name__=='__main__':
     from torch.utils.data import DataLoader
 
     # Build Network
-    Method = 'UTAL'
+    Method = 'CaFormer_3'
 
     model, opt = model_generator(Method,'cuda')
 
-    dataset_name = 'harvard'
+    dataset_name = 'CAVE'
     model_folder = Method + '/' + dataset_name + '/'
 
     # Training Setting
-    Batch_size = 2
+    Batch_size =4
     end_epoch = 2000
     ckpt_step = 50
     lr = 1e-4
-    patch_size = 512 #Crop Ps
+    patch_size = 256 #Crop Ps
 
     # Scheme Setting
-    General=True
-    bestepoch=550
+    General=False
+    bestepoch=700
     meta = False
-    Specific=False
+    Specific=True
 
     resume=False
-    start=700
+    start=0
 
     if General:
         from Dataloader_tool import Large_dataset
