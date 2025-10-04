@@ -21,8 +21,6 @@ def Eva(model, validate_data_loader,model_folder,start_epoch=100,name='recon'):
     epoch_train_loss, epoch_val_loss = [], []
     psnr=[]
 
-    # ============Epoch Train=============== #
-
     model.eval()
     with torch.no_grad():
         for iteration, batch in enumerate(validate_data_loader, 1):
