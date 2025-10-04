@@ -74,7 +74,7 @@ class Dataloader():
         self.opt = opt
     def load(self,index):
         if self.name.upper() =='CAVE':
-            base = sio.loadmat('Multispectral Image Dataset/CAVE/'+str(index)+'.mat')
+            base = sio.loadmat('D:/Caoxuheng/dataset/CAVE/'+str(index)+'.mat')
             key = list(base.keys())[-1]
             Ground_Truth = base[key]
 
@@ -132,10 +132,10 @@ class Large_dataset(data.Dataset):
         if name.upper() =='CAVE':
             self.n = 512 // patch_size
             # test_list = [1,2,7,8,9,10,11,15,19,23,26,27]
-            test_list = [1,2,7,8,9,10,11,14,15,20,26,27]
-
-            val_list = [16,18,28]
-            train_set= list(set(range(1,32))-set(test_list)-(set(val_list)))
+            test_list = [0,13,7,25,15,18,28,1,20,6]
+            self.test_name = test_list
+            val_list = [4,19,30]
+            train_set= list(set(range(31))-set(test_list)-(set(val_list)))
             if type=='train':
                 data_set = train_set
             elif type =='eval':
@@ -150,7 +150,7 @@ class Large_dataset(data.Dataset):
             self.RGB_list.append(MSI[0].permute([2,1,0]))
             self.LR_list.append(HSI[0].permute([2,1,0]))
         self.count = len(self.HR_list)
-        self.channel = 3
+        self.channel = opt.msi_channel
         self.crop = crop
         self.factor = opt.sf
         if crop:
