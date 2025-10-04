@@ -5,6 +5,7 @@ import torch
 from torch import nn
 import numpy as np
 import scipy.io as sio
+
 def train(model,training_data_loader, validate_data_loader,model_folder,optimizer,lr,start_epoch=0,end_epoch=2000,ckpt_step=50,RESUME=False,meta=False):
     PLoss=nn.L1Loss()
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=100,
@@ -104,7 +105,7 @@ def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_nam
 
     R = torch.tensor(np.load(opt.srfpath)).float().cuda()
     if dataset_name.lower()=='cave':
-        lst =[1,2,7,8,9,10,11,15,19,23,26,27]
+        lst =[0,13,7,25,15,18,28,1,20,6]
         size = 512
     elif dataset_name.lower() =='harvard':
         lst=[ 74, 62, 71, 70, 57, 66, 75, 2, 35, 34, 23, 59, 29, 65, 28, 8, 43, 63, 42, 19, 13, 33,
@@ -165,58 +166,74 @@ def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_nam
                     save_checkpoint(save_folder, model, optimizer, lr, idx)
 
 
+def main(args):
 
+    model, opt = model_generator(args.method,'cuda')
+    model_folder = args.method + '/' + args.dataset + '/'
 
-if __name__=='__main__':
+    if args.general:
 
-    from torch.utils.data import DataLoader
-
-    # Build Network
-    Method = 'CaFormer_3'
-
-    model, opt = model_generator(Method,'cuda')
-
-    dataset_name = 'CAVE'
-    model_folder = Method + '/' + dataset_name + '/'
-
-    # Training Setting
-    Batch_size =4
-    end_epoch = 2000
-    ckpt_step = 50
-    lr = 1e-4
-    patch_size = 256 #Crop Ps
-
-    # Scheme Setting
-    General=False
-    bestepoch=700
-    meta = False
-    Specific=True
-
-    resume=False
-    start=0
-
-    if General:
+        from torch.utils.data import DataLoader
         from Dataloader_tool import Large_dataset
-        Train_data = Large_dataset(opt, patch_size,dataset_name ,type='train')
-        Val_data = Large_dataset(opt,  patch_size,dataset_name ,type='eval')
+        Train_data = Large_dataset(opt, args.patch_size,args.dataset ,type='train')
+        Val_data = Large_dataset(opt,  args.patch_size,args.dataset ,type='eval')
 
-        training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=Batch_size, shuffle=True,
+        training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
                                       pin_memory=True, drop_last=False)
-        validate_data_loader = DataLoader(dataset=Val_data, num_workers=0, batch_size=Batch_size, shuffle=True,
+        validate_data_loader = DataLoader(dataset=Val_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
                                           pin_memory=True, drop_last=True)
-        if meta:
-            Train_data = Large_dataset(opt, patch_size, dataset_name, type='test')
+        if args.meta:
+            Train_data = Large_dataset(opt, args.patch_size, args.dataset, type='test')
 
-            training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=Batch_size, shuffle=True,
+            training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
                                               pin_memory=True, drop_last=False)
 
             meta_train(model, training_data_loader)
 
         else:
-            optimizer = torch.optim.Adam(model.parameters(),lr=lr)
-            bestepoch = train(model,training_data_loader,validate_data_loader,model_folder=model_folder,optimizer=optimizer,lr=lr,start_epoch=start,end_epoch=end_epoch,ckpt_step=ckpt_step,RESUME=resume,meta = meta)
+            optimizer = torch.optim.Adam(model.parameters(),lr=args.lr)
+            bestepoch = train(
+                model=model,
+                training_data_loader=training_data_loader,
+                validate_data_loader=validate_data_loader,
+                model_folder=model_folder,
+                optimizer=optimizer,
+                lr=args.lr,
+                start_epoch=args.start_epoch,
+                end_epoch=args.epochs,
+                ckpt_step=args.ckpt_step,
+                RESUME=args.resume,
+                meta=False
+            )
+    if args.specific:
+        evalu_model_specific(
+            model=model,
+            opt=opt,
+            model_folder=model_folder,
+            test_epoch=bestepoch,
+            end_epoch=args.epochs,
+            dataset_name=args.dataset
+        )
 
-    if Specific:
-        evalu_model_specific(model, opt, model_folder, bestepoch, end_epoch, dataset_name)
 
 
+
+if __name__=='__main__':
+
+    import argparse
+    parser = argparse.ArgumentParser(description='HSI-MSI Fusion Training/Testing Entrypoint')
+    parser.add_argument('--method',           type=str, default='PSRT')
+    parser.add_argument('--dataset',          type=str, default='CAVE', choices=['CAVE','HARVARD'])
+    parser.add_argument('--batch_size',       type=int, default=16)
+    parser.add_argument('--epochs',           type=int, default=2000)
+    parser.add_argument('--ckpt_step',        type=int, default=50)
+    parser.add_argument('--lr',               type=float, default=1e-4)
+    parser.add_argument('--patch_size',            type=int, default=128, help='crop size used by dataset')
+    parser.add_argument('--resume',           action='store_true',default=False, help='resume general training from checkpoint')
+    parser.add_argument('--start_epoch',      type=int, default=0, help='resume start epoch (the ckpt name prefix)')
+    parser.add_argument('--general',          default=True,action='store_true', help='run general training')
+    parser.add_argument('--specific',         default=False,action='store_true', help='run per-image specific finetuning/eval')
+    parser.add_argument('--meta',             default=False,action='store_true', help='run meta_train instead of normal train')
+    cfig = parser.parse_args()
+
+    main(cfig)
