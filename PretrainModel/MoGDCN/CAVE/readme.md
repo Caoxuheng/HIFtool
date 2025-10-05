@@ -28,14 +28,14 @@ A concise guide to MoGDCN training and evaluation—covering key arguments, defa
 
 ## Network_eval_VL
 Method       = 'MoGDCN'  
-dataset_name = 'HARVARD'  
-patch_size   = 1024    # Larger crop / full-image inference for cleaner visualization  
+dataset_name = 'CAVE'  
+patch_size   = 512   # Larger crop / full-image inference for cleaner visualization  
 bestepoch    = 600   # Select the best epoch   
 
 ## loader_L
-self.test_name = sorted(glob('Multispectral Image Dataset/HARVARD/**/*.mat', recursive=True))  
-test_list = [i-1 for i in [4,8,13,19,20,25,27,31,35,42,43,44,48,52,58,59,60,67,70]]  
-val_list = [i-1 for i in [1, 3, 10,21,45,63,36,72]]    
-train_set = list(set(range(77)) - set(test_list) - (set(val_list)))  
+test_list = [0, 13, 7, 25, 15, 18, 28, 1, 20, 6]
+val_list  = [4, 19, 30]
+train_set = list(set(range(31)) - set(test_list) - set(val_list))
+
 ## Dataset
-[CAVE](https://vision.seas.harvard.edu/hyperspec/d2x5g3/)
+[CAVE](https://aistudio.baidu.com/datasetdetail/101969)
