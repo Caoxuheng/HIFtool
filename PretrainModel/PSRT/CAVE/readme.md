@@ -1,4 +1,4 @@
-A concise guide to PSRT training and evaluation—covering key arguments, defaults, data splits, and reproducible commands for CAVE datasets
+A concise guide to PSRT training and evaluation—covering key arguments, defaults, data splits, and reproducible commands for CAVE dataset
 
 ## PSRT.Config
 
