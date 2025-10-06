@@ -1,4 +1,4 @@
-You can download the pretrain model [here](https://aistudio.baidu.com/dataset/detail/357272).
+You can download the pretrain model [here](https://aistudio.baidu.com/dataset/detail/357272).  
 A concise guide to MoGDCN training and evaluation—covering key arguments, defaults, data splits, and reproducible commands for CAVE dataset
 
 ## MoGDCN.Config
