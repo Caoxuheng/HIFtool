@@ -7,14 +7,21 @@ import torch
 from torch import nn
 import numpy as np
 
-def Eva(model, validate_data_loader,model_folder,start_epoch=100,name='recon'):
+def Eva(model, validate_data_loader,model_folder):
+    filename = validate_data_loader.dataset.test_name
     for iteration, batch in enumerate(validate_data_loader, 1):
-        GT,  LRHSI, HRMSI = batch[‘hrhsi’].cuda(), batch[‘lrhsi’].cuda(), batch[‘hrmsi’].cuda()
-        output_HRHSI = model(LRHSI, HRMSI,GT,iteration)
+
+        GT,  LRHSI, HRMSI = batch[0].cuda(), batch[1].cuda(), batch[2].cuda()
+        # GT,  LRHSI, HRMSI = batch['hrhsi'].cuda(), batch['lrhsi'].cuda(), batch['hrmsi'].cuda()
+        output_HRHSI = model(LRHSI, HRMSI,iteration)
         output_HRHSI = output_HRHSI.detach().cpu().permute(1, 2, 0).numpy()
         GT = GT[0].detach().cpu().permute(1, 2, 0).numpy()
-        iv.spectra_metric(output_HRHSI, GT).Evaluation()
-        np.save(model_folder+f'specific{iteration}',output_HRHSI)
+
+        test_list = [i - 1 for i in [4, 8, 13, 19, 20, 25, 27, 31, 35, 42, 43, 44, 48, 52, 58, 59, 60, 67, 70]]
+        it = test_list[iteration - 1]
+        iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[it].split('\\')[-1]))
+        np.save(model_folder + str(filename[iteration - 1].split('\\')[-1]), output_HRHSI)
+
 
     return  output_HRHSI
 
@@ -59,16 +66,15 @@ if __name__=='__main__':
     model, opt = model_generator(Method,'cuda')
 
     # Dataset Setting
-    dataset_name = 'chikusei'
+    dataset_name = 'HARVARD'
     model_folder =  'UTAL/'+ dataset_name +'/'
     # Training Setting
     Batch_size = 1
-    start =2000
-    patch_size= 512
 
+    patch_size= 128
     Test_data = Large_dataset(opt, patch_size, dataset_name, type='test')
 
     training_data_loader = DataLoader(dataset=Test_data, num_workers=0, batch_size=Batch_size, shuffle=False,
                                       pin_memory=True, drop_last=False)
-    output_HRHSI = Eva(model,training_data_loader,model_folder=model_folder,start_epoch=start,name=Method)
+    output_HRHSI = Eva(model,training_data_loader,model_folder=model_folder)
 
