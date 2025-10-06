@@ -5,7 +5,7 @@ import torch
 from torch import nn
 import numpy as np
 import scipy.io as sio
-
+import os
 def train(model,training_data_loader, validate_data_loader,model_folder,optimizer,lr,start_epoch=0,end_epoch=2000,ckpt_step=50,RESUME=False,meta=False):
     PLoss=nn.L1Loss()
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=100,
@@ -187,6 +187,12 @@ def main(args):
 
             training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
                                               pin_memory=True, drop_last=False)
+            opt.fusion_model_path = f'./UTAL/{args.dataset}/{args.start_epoch}.pth'
+
+            opt.save_path = f'./UTAL/{args.dataset}/meta'
+
+            if not os.path.isdir(opt.save_path):
+                os.makedirs(opt.save_path, exist_ok=True)
 
             meta_train(model, training_data_loader)
 
@@ -222,18 +228,18 @@ if __name__=='__main__':
 
     import argparse
     parser = argparse.ArgumentParser(description='HSI-MSI Fusion Training/Testing Entrypoint')
-    parser.add_argument('--method',           type=str, default='PSRT')
-    parser.add_argument('--dataset',          type=str, default='CAVE', choices=['CAVE','HARVARD'])
+    parser.add_argument('--method',           type=str, default='UTAL_meta')
+    parser.add_argument('--dataset',          type=str, default='HARVARD', choices=['CAVE','HARVARD'])
     parser.add_argument('--batch_size',       type=int, default=16)
     parser.add_argument('--epochs',           type=int, default=2000)
     parser.add_argument('--ckpt_step',        type=int, default=50)
     parser.add_argument('--lr',               type=float, default=1e-4)
     parser.add_argument('--patch_size',            type=int, default=128, help='crop size used by dataset')
     parser.add_argument('--resume',           action='store_true',default=False, help='resume general training from checkpoint')
-    parser.add_argument('--start_epoch',      type=int, default=0, help='resume start epoch (the ckpt name prefix)')
+    parser.add_argument('--start_epoch',      type=int, default=450, help='resume start epoch (the ckpt name prefix)')
     parser.add_argument('--general',          default=True,action='store_true', help='run general training')
     parser.add_argument('--specific',         default=False,action='store_true', help='run per-image specific finetuning/eval')
-    parser.add_argument('--meta',             default=False,action='store_true', help='run meta_train instead of normal train')
+    parser.add_argument('--meta',             default=True,action='store_true', help='run meta_train instead of normal train')
     cfig = parser.parse_args()
 
     main(cfig)
