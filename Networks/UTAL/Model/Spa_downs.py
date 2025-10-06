@@ -2,6 +2,18 @@ import numpy as np
 import torch
 import torch.nn as nn
 import scipy.io as sio
+from pathlib import Path
+
+
+def _get_fset_path():
+    return Path(__file__).resolve().parents[1] / "Knowledge" / "f_set.mat"
+
+
+def load_f_set():
+    mat_path = _get_fset_path()
+    data = sio.loadmat(mat_path.as_posix(), simplify_cells=True)
+    return data
+
 
 class Spa_Downs(nn.Module):
     '''
@@ -12,8 +24,8 @@ class Spa_Downs(nn.Module):
         #factor:the times of downsample
 		
         super(Spa_Downs, self).__init__()
-        kernels = sio.loadmat('Networks\UTAL\knowledge\f_set.mat')
 
+        kernels = load_f_set()
         assert phase in [0, 0.5], 'phase should be 0 or 0.5'
 
         if kernel_type == 0:    # 'lanczos2':
@@ -49,7 +61,7 @@ class Spa_Downs(nn.Module):
             self.kernel = get_kernel(factor, kernel_type_, phase, kernel_width, support=support, sigma=sigma)
             kernel_size = self.kernel.shape
         else:
-            self.kernel = kernels['f_set'][0][kernel_type]
+            self.kernel = kernels['f_set'][kernel_type]
             kernel_size = self.kernel.shape
 
         self.kernel_size = kernel_size
@@ -151,9 +163,6 @@ def get_kernel(factor, kernel_type, phase, kernel_width, support=None, sigma=Non
     return kernel
 
 #a = Downsampler(n_planes=3, factor=2, kernel_type='lanczos2', phase='1', preserve_size=True)
-
-
-
 
 
 
