@@ -9,13 +9,15 @@ class Specific_Learning():
        self.opt = opt
        self.self_train = specific_learning_UTAL
        self.device = device
-   def __call__(self,LR_HSI, HR_MSI):
-       out = self.self_train(LR_HSI, HR_MSI,self.opt,self.device)
+   def __call__(self,LR_HSI, HR_MSI,interation):
+       out = self.self_train(LR_HSI, HR_MSI,interation,self.opt,self.device)
+       return out
 
 class ThreeBranch_Net(nn.Module):
 
    def __init__(self, opt,device ):
        super(ThreeBranch_Net, self).__init__()
+       self.opt=opt
        Dim =[opt.msi_channel,opt.msi_channel+opt.hsi_channel,opt.hsi_channel]
        self.sf = opt.sf
        Depth = opt.Depth
@@ -92,7 +94,13 @@ class ThreeBranch_Net(nn.Module):
        self.MaskX = torch.cat((b, a, a), 0).unsqueeze(0).to(device)
        self.MaskY = torch.cat((a, b, a), 0).unsqueeze(0).to(device)
        self.MaskZ = torch.cat((a, a, b), 0).unsqueeze(0).to(device)
-
+   def Re_generate_Mask(self,device):
+       h_hrmsi, w_hrmsi = self.opt.h_size
+       a = torch.ones(h_hrmsi,w_hrmsi ).unsqueeze(0)
+       b = torch.zeros(h_hrmsi,w_hrmsi ).unsqueeze(0)
+       self.MaskX = torch.cat((b, a, a), 0).unsqueeze(0).to(device)
+       self.MaskY = torch.cat((a, b, a), 0).unsqueeze(0).to(device)
+       self.MaskZ = torch.cat((a, a, b), 0).unsqueeze(0).to(device)
    def forward(self,lrhsi, hrmsi):
        '''
        x:HR_MSI
@@ -227,11 +235,12 @@ class FineNet_SelfAtt_InputK_P_V2(nn.Module):
 class Meta_train():
    def __init__(self,opt,device):
        self.opt = opt
+
        self.meta_train = meta_train_adaptor
        self.device = device
        self.fusion = ThreeBranch_Net(opt,device)
-   def __call__(self,x,idx):
-       self.meta_train(x,idx,self.opt,self.device,self.fusion)
+   def __call__(self,lrhsi,hrmsi,idx):
+       self.meta_train(lrhsi,hrmsi,idx,self.opt,self.device,self.fusion)
 
 if __name__ =='__main__':
    import config
