@@ -14,14 +14,17 @@ def Eva(model, validate_data_loader,model_folder):
         GT,  LRHSI, HRMSI = batch[0].cuda(), batch[1].cuda(), batch[2].cuda()
         # GT,  LRHSI, HRMSI = batch['hrhsi'].cuda(), batch['lrhsi'].cuda(), batch['hrmsi'].cuda()
         output_HRHSI = model(LRHSI, HRMSI,iteration)
+        print(output_HRHSI.shape)
         output_HRHSI = output_HRHSI.detach().cpu().permute(1, 2, 0).numpy()
         GT = GT[0].detach().cpu().permute(1, 2, 0).numpy()
-
-        test_list = [i - 1 for i in [4, 8, 13, 19, 20, 25, 27, 31, 35, 42, 43, 44, 48, 52, 58, 59, 60, 67, 70]]
-        it = test_list[iteration - 1]
-        iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[it].split('\\')[-1]))
-        np.save(model_folder + str(filename[iteration - 1].split('\\')[-1]), output_HRHSI)
-
+        try:
+            test_list = [i - 1 for i in [4, 8, 13, 19, 20, 25, 27, 31, 35, 42, 43, 44, 48, 52, 58, 59, 60, 67, 70]]
+            it = test_list[iteration - 1]
+            iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[it].split('\\')[-1]))
+            np.save(model_folder + str(filename[iteration - 1].split('\\')[-1]), output_HRHSI)
+        except:
+            iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[iteration - 1]))
+            np.save(model_folder + str(filename[iteration - 1]), output_HRHSI)
 
     return  output_HRHSI
 
@@ -64,14 +67,19 @@ if __name__=='__main__':
     # Build Network
     Method = 'UTAL_specific'
     model, opt = model_generator(Method,'cuda')
-
+    best_epoch = 1200
+    patch_size = 512
     # Dataset Setting
-    dataset_name = 'HARVARD'
+    dataset_name = 'CAVE'
+    opt.dataset = dataset_name
+    opt.h_size=[patch_size]*2
+    opt.fusion_model_path = f'./UTAL/{dataset_name}/{best_epoch}.pth'
+
     model_folder =  'UTAL/'+ dataset_name +'/'
     # Training Setting
     Batch_size = 1
 
-    patch_size= 128
+
     Test_data = Large_dataset(opt, patch_size, dataset_name, type='test')
 
     training_data_loader = DataLoader(dataset=Test_data, num_workers=0, batch_size=Batch_size, shuffle=False,
