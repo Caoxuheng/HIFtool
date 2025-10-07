@@ -85,7 +85,14 @@ def meta_train(model, training_data_loader):
     # ============Epoch Train=============== #
     for iteration, batch in enumerate(training_data_loader, 1):
         GT, LRHSI, HRMSI = batch[0].cuda(), batch[1].cuda(), batch[2].cuda()
-        model(GT,iteration)
+        filename = training_data_loader.dataset.test_name
+        it = training_data_loader.dataset.testlst[iteration-1]
+        try:
+            nm = filename[it].split('\\')[-1]
+        except:
+            nm = it
+
+        model(LRHSI, HRMSI,nm)
 
 
 
@@ -183,18 +190,19 @@ def main(args):
         validate_data_loader = DataLoader(dataset=Val_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
                                           pin_memory=True, drop_last=True)
         if args.meta:
-            Train_data = Large_dataset(opt, args.patch_size, args.dataset, type='test')
+            Test_data = Large_dataset(opt, args.patch_size, args.dataset, type='test')
 
-            training_data_loader = DataLoader(dataset=Train_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
+            test_data_loader = DataLoader(dataset=Test_data, num_workers=0, batch_size=args.batch_size, shuffle=True,
                                               pin_memory=True, drop_last=False)
             opt.fusion_model_path = f'./UTAL/{args.dataset}/{args.start_epoch}.pth'
 
             opt.save_path = f'./UTAL/{args.dataset}/meta'
-
+            opt.dataset = args.dataset
+            opt.h_size = [args.patch_size]*2
             if not os.path.isdir(opt.save_path):
                 os.makedirs(opt.save_path, exist_ok=True)
 
-            meta_train(model, training_data_loader)
+            meta_train(model, test_data_loader)
 
         else:
             optimizer = torch.optim.Adam(model.parameters(),lr=args.lr)
@@ -217,7 +225,7 @@ def main(args):
             opt=opt,
             model_folder=model_folder,
             test_epoch=bestepoch,
-            end_epoch=args.epochs,
+            end_epoch=args.start_epoch,
             dataset_name=args.dataset
         )
 
@@ -228,18 +236,18 @@ if __name__=='__main__':
 
     import argparse
     parser = argparse.ArgumentParser(description='HSI-MSI Fusion Training/Testing Entrypoint')
-    parser.add_argument('--method',           type=str, default='UTAL_meta')
-    parser.add_argument('--dataset',          type=str, default='HARVARD', choices=['CAVE','HARVARD'])
-    parser.add_argument('--batch_size',       type=int, default=16)
+    parser.add_argument('--method',           type=str, default='MoGDCN')
+    parser.add_argument('--dataset',          type=str, default='CAVE', choices=['CAVE','HARVARD'])
+    parser.add_argument('--batch_size',       type=int, default=1)
     parser.add_argument('--epochs',           type=int, default=2000)
     parser.add_argument('--ckpt_step',        type=int, default=50)
     parser.add_argument('--lr',               type=float, default=1e-4)
-    parser.add_argument('--patch_size',            type=int, default=128, help='crop size used by dataset')
+    parser.add_argument('--patch_size',            type=int, default=512, help='crop size used by dataset')
     parser.add_argument('--resume',           action='store_true',default=False, help='resume general training from checkpoint')
-    parser.add_argument('--start_epoch',      type=int, default=450, help='resume start epoch (the ckpt name prefix)')
+    parser.add_argument('--start_epoch',      type=int, default=300, help='resume start epoch (the ckpt name prefix)')
     parser.add_argument('--general',          default=True,action='store_true', help='run general training')
-    parser.add_argument('--specific',         default=False,action='store_true', help='run per-image specific finetuning/eval')
-    parser.add_argument('--meta',             default=True,action='store_true', help='run meta_train instead of normal train')
+    parser.add_argument('--specific',         default=True,action='store_true', help='run per-image specific finetuning/eval')
+    parser.add_argument('--meta',             default=False,action='store_true', help='run meta_train instead of normal train')
     cfig = parser.parse_args()
 
     main(cfig)
