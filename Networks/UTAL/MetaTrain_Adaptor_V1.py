@@ -169,7 +169,6 @@ def meta_train_adaptor(GT,idx,opt,device,fusion_model):
             torch.save(down_spc, opt.save_path+f'/{idx}_Donwspc_'+str(int(epoch/10))+'.pth')
 
 
-
 def specific_learning_UTAL(LR_HSI, HR_MSI,iteration, opt, device):
     Stages = 40
     num_steps = 10
@@ -183,9 +182,9 @@ def specific_learning_UTAL(LR_HSI, HR_MSI,iteration, opt, device):
     model_path = torch.load(opt.fusion_model_path)
     model = ThreeBranch_Net(opt, device).to(device)
     model.state_dict(model_path['net'])
-    #
+    model.Re_generate_Mask(device)
     with torch.no_grad():
-        Input = model(HR_MSI.copy(), LR_HSI.copy())
+        Input = model( LR_HSI,HR_MSI)
 
     # Input =torch.FloatTensor(np.load(f'UTAL/{iteration}.npy'))[None].permute(0,3,1,2).to(device)
     # plt.subplot(1,2,1),plt.imshow(GT[0,0].detach().cpu())
@@ -215,7 +214,7 @@ def specific_learning_UTAL(LR_HSI, HR_MSI,iteration, opt, device):
 
     # Loading the Meta-trained Adaptor
     Net= FineNet_SelfAtt_InputK_P_V2().to(device)
-    Net = torch.load(f'UTAL_meta/{opt.dataset}/{iteration}_model_9.pth')
+    Net = torch.load(f'UTAL/{opt.dataset}/meta/{iteration}_model_9.pth',weights_only=False)
     # Net.load_state_dict(path['net'])
     optimizer = torch.optim.Adam([{'params': Net.parameters(), 'initial_lr': lr}], lr=lr, weight_decay=WD)
 
@@ -265,9 +264,9 @@ def specific_learning_UTAL(LR_HSI, HR_MSI,iteration, opt, device):
             optimizer_d.step()
             optimizer_spc.step()
 
-
     out = torch.squeeze(out)
     return out
+
 
 
 
