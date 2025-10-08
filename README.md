@@ -14,22 +14,16 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 
 > **[2025.04.11]**  PSTUN, a new supervised learning method, has been added to our collection of SOTA algorithms.
 
-> **[2025.01.17]**  Compatible with CAVE and HARVARD datasets (Network_training_VL.py).
+> **[2025.01.17]**  Compatible with CAVE and HARVARD datasets (Network_training_VL.py and Network_eval_VL.py).
 
 > **[2025.01.15]**  UALT, a  supervised-unsupervised combined method, has been added to our collection of SOTA algorithms.     
 
 > **[2024.05.16]**  Pre-trained models on the QB dataset in [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection) are released.     
 
-> **[2024.05.05]**  Compatible with [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection).     
-
-> **[2024.05.04]**  Fixed the bug of missing the 'config.py' in Fusformer.     
+> **[2024.05.05]**  Compatible with [Pancollection Dataset](https://github.com/liangjiandeng/PanCollection).       
 
 > **[2024.04.03]**  DBSR, a blind unsupervised learning method, has been added to our collection of SOTA algorithms.   
-
-> **[2024.03.20]**  Fixed the bug of missing the 'utils' file.  
-
-> **[2024.03.14]**  Added download links for the Chikusei dataset.   
-
+ 
 > **[2024.03.05]**  DCTransformer, a new supervised learning method, has been added to our collection of SOTA algorithms.  
 </p></details>
 
