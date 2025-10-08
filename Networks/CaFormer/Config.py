@@ -2,7 +2,7 @@ import argparse
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--sf',type=int,default=32, help='scale factor')
 
-parser.add_argument('--inchannel',type=int,default=31, help='spectral band number')
+parser.add_argument('--msi_channel',type=int,default=31, help='spectral band number')
 parser.add_argument('--patch_size',type=int,default=80, help='patch size for training')
 
 
