@@ -139,5 +139,23 @@ def ModeSelection(Mode:str):
     return fusion
 
 
+def Unsupervisedfusion_VL(model, model_folder, dataset=None):
 
+    if not os.path.isdir(model_folder):
+        os.makedirs(model_folder,exist_ok=True)
+    for iteration, batch in enumerate(dataset, 1):
+
+        GT, LRHSI, HRMSI = batch[0].cuda(), batch[1].cuda(), batch[2].cuda()
+
+        output_HRHSI = model(LRHSI, HRMSI,GT)
+        filename =  dataset.dataset.test_name
+        GT = GT[0].permute(1, 2, 0).cpu().numpy()
+        try:
+            test_list = [i - 1 for i in [4, 8, 13, 19, 20, 25, 27, 31, 35, 42, 43, 44, 48, 52, 58, 59, 60, 67, 70]]
+            it = test_list[iteration-1]
+            iv.spectra_metric(output_HRHSI,GT).Evaluation(str(filename[it].split('\\')[-1]))
+            np.save(model_folder + str(filename[iteration - 1].split('\\')[-1]), output_HRHSI)
+        except:
+            iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[iteration - 1]))
+            np.save(model_folder + str(filename[iteration - 1]), output_HRHSI)
 
