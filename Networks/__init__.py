@@ -8,7 +8,7 @@ def model_generator(method:str, device="cuda"):
         from .CaFormer.net import CaFormer
         from .CaFormer.Config import args as opt
         num_iterations = int(method.split('_')[-1])
-        model = CaFormer(sf=opt.sf,in_c=opt.inchannel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
+        model = CaFormer(sf=opt.sf,in_c=opt.msi_channel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
     elif 'UTAL' in method:
         
         from .UTAL.net import ThreeBranch_Net,Meta_train, Specific_Learning
