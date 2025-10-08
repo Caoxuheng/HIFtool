@@ -11,7 +11,7 @@ def train(model,training_data_loader, validate_data_loader,model_folder,optimize
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=100,
                                                    gamma=0.5)
     print('Start training...')
-    import os 
+
     if not os.path.isdir(model_folder):
         os.makedirs(model_folder,exist_ok=True)
     if RESUME:
@@ -228,15 +228,33 @@ def main(args):
             end_epoch=args.start_epoch,
             dataset_name=args.dataset
         )
+    if args.unsupervised:
+        from Dataloader_tool import Large_dataset
+        from fusion_mode import Unsupervisedfusion_VL
+        from torch.utils.data import DataLoader
+        import cv2
+        blind = False
+        model, opt = model_generator(args.method, 'cuda')
+        Test_data = Large_dataset(opt, args.patch_size, args.dataset, type='test')
+        test_data_loader = DataLoader(dataset=Test_data, num_workers=0, batch_size=args.batch_size, shuffle=False,
+                                      pin_memory=True, drop_last=False)
+        model_folder = args.method + '/' + args.dataset + '/'
 
-
+        if blind is True:
+            mat_save_path = 'E:/Multispectral Image Dataset\QB/test/Test(HxWxC)_qb_data8.mat'
+        else:
+            srf = np.load('Dataloader_tool/srflib/NikonD700.npy')
+            psf = cv2.getGaussianKernel(opt.sf // 2 * 2 + 1, sigma=opt.sf * 0.866)
+            sp_matrix = psf @ psf.T
+            model.equip(srf, sp_matrix)
+        Unsupervisedfusion_VL(model, model_folder, dataset=test_data_loader )
 
 
 if __name__=='__main__':
 
     import argparse
     parser = argparse.ArgumentParser(description='HSI-MSI Fusion Training/Testing Entrypoint')
-    parser.add_argument('--method',           type=str, default='MoGDCN')
+    parser.add_argument('--method',           type=str, default='UDALN')
     parser.add_argument('--dataset',          type=str, default='CAVE', choices=['CAVE','HARVARD'])
     parser.add_argument('--batch_size',       type=int, default=1)
     parser.add_argument('--epochs',           type=int, default=2000)
@@ -245,9 +263,13 @@ if __name__=='__main__':
     parser.add_argument('--patch_size',            type=int, default=512, help='crop size used by dataset')
     parser.add_argument('--resume',           action='store_true',default=False, help='resume general training from checkpoint')
     parser.add_argument('--start_epoch',      type=int, default=300, help='resume start epoch (the ckpt name prefix)')
-    parser.add_argument('--general',          default=True,action='store_true', help='run general training')
-    parser.add_argument('--specific',         default=True,action='store_true', help='run per-image specific finetuning/eval')
+    parser.add_argument('--general',          default=False,action='store_true', help='run general training')
+
     parser.add_argument('--meta',             default=False,action='store_true', help='run meta_train instead of normal train')
+    parser.add_argument('--unsupervised', default=True, action='store_true',
+                        help='if unsupervised method')
+    parser.add_argument('--specific', default=False, action='store_true',
+                        help='run per-image specific finetuning/eval')
     cfig = parser.parse_args()
 
     main(cfig)
