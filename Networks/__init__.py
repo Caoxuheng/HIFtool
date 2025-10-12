@@ -8,7 +8,14 @@ def model_generator(method:str, device="cuda"):
         from .CaFormer.net import CaFormer
         from .CaFormer.Config import args as opt
         num_iterations = int(method.split('_')[-1])
-        model = CaFormer(sf=opt.sf,in_c=opt.msi_channel, out_c = opt.hsi_channel,n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
+        model = CaFormer(sf=opt.sf,in_c=opt.msi_channel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
+    elif 'DTDNML' in method:
+        from .DTDNML.dtdnml import DTDNML
+        from .DTDNML.Config import args as opt
+        sp_range = [[0,10],[10,20],[20,30]]
+        model = DTDNML()
+        model.initialize(opt,sp_range=sp_range)
+
     elif 'UTAL' in method:
         
         from .UTAL.net import ThreeBranch_Net,Meta_train, Specific_Learning
@@ -66,6 +73,11 @@ def model_generator(method:str, device="cuda"):
         # sp_range = [list(range(30)),list(range(13,50)),list(range(41,84)),list(range(68,128))]
         sp_range = np.array([[0,30],[13, 50], [41, 84], [68, 127]])
         model = udaln(opt,sp_range)
+    elif 'DBSR' in method:
+        from .DBSR.net import DBSR
+        from .DBSR.config import  opt
+
+        model = DBSR(opt)
     elif 'FeafusFormer' in method:
         from .FeafusFormer.net import Feafusformer
         from .FeafusFormer.config import opt
