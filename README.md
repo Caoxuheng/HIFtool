@@ -7,6 +7,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+> **[2025.10.15]**  DTDNML, BUSI, unsupervised blind methods, have been added to our collection of SOTA algorithms.
 
 > **[2025.10.05]**  Pre-trained models on the CAVE and HARVARD datasets are released. 
 
