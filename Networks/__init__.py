@@ -15,6 +15,10 @@ def model_generator(method:str, device="cuda"):
         sp_range = [[0,10],[10,20],[20,30]]
         model = DTDNML()
         model.initialize(opt,sp_range=sp_range)
+    elif 'BUSI' in method:
+        from .BUSI.model import BUSI
+        from .BUSI.Config import args as opt
+        model = BUSI(opt)
 
     elif 'UTAL' in method:
         
