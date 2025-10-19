@@ -140,16 +140,21 @@ def ModeSelection(Mode:str):
 
 
 def Unsupervisedfusion_VL(model, model_folder, dataset=None):
-
+    import time
     if not os.path.isdir(model_folder):
         os.makedirs(model_folder,exist_ok=True)
+    TIMECOST=[]
     for iteration, batch in enumerate(dataset, 1):
 
         GT, LRHSI, HRMSI = batch[0].cuda(), batch[1].cuda(), batch[2].cuda()
-
+        t1 = time.time()
         output_HRHSI = model(LRHSI, HRMSI,GT)
+        t2=time.time()
+        TIMECOST.append(t2-t1)
         filename =  dataset.dataset.test_name
         GT = GT[0].permute(1, 2, 0).cpu().numpy()
+
+        # output_HRHSI = output_HRHSI[0].permute(1, 2, 0).cpu().detach().numpy()
         try:
             test_list = [i - 1 for i in [4, 8, 13, 19, 20, 25, 27, 31, 35, 42, 43, 44, 48, 52, 58, 59, 60, 67, 70]]
             it = test_list[iteration-1]
@@ -158,4 +163,36 @@ def Unsupervisedfusion_VL(model, model_folder, dataset=None):
         except:
             iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[iteration - 1]))
             np.save(model_folder + str(filename[iteration - 1]), output_HRHSI)
+    print(np.mean(TIMECOST))
+
+def Optimization_VL(model, model_folder, dataset=None):
+    import time
+    if not os.path.isdir(model_folder):
+        os.makedirs(model_folder, exist_ok=True)
+    TIMECOST = []
+    for iteration, batch in enumerate(dataset, 1):
+
+        GT, LRHSI, HRMSI = batch[0], batch[1], batch[2]
+        t1 = time.time()
+
+
+        GT = GT[0].permute(1, 2, 0).cpu().numpy()
+        LRHSI = LRHSI[0].permute(1, 2, 0).cpu().numpy()
+        HRMSI = HRMSI[0].permute(1, 2, 0).cpu().numpy()
+
+        output_HRHSI = model(LRHSI, HRMSI)
+        t2 = time.time()
+        TIMECOST.append(t2 - t1)
+        filename = dataset.dataset.test_name
+        try:
+            test_list = [i - 1 for i in [4, 8, 13, 19, 20, 25, 27, 31, 35, 42, 43, 44, 48, 52, 58, 59, 60, 67, 70]]
+            it = test_list[iteration - 1]
+            iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[it].split('\\')[-1]))
+            np.save(model_folder + str(filename[iteration - 1].split('\\')[-1]), output_HRHSI)
+        except:
+            iv.spectra_metric(output_HRHSI, GT).Evaluation(str(filename[iteration - 1]))
+            np.save(model_folder + str(filename[iteration - 1]), output_HRHSI)
+    print(np.mean(TIMECOST))
+
+
 
