@@ -1,9 +1,10 @@
-# Code author: Xiangmei Hu (Beijing Institute of Graphic Communication)
+
 import numpy as np
 from time import time
 from scipy.sparse.linalg import svds
 from numpy.fft import fft2, ifft2, ifftshift
-
+from scipy.linalg import toeplitz
+from .est_RB import  sen_resp_est
 
 def ConvC(X, FK, nl):
     p, n = X.shape
@@ -23,6 +24,88 @@ def soft_thr(X1, X2, tau):
     Y4 = A.T * X2
     return Y3, Y4
 
+def upsamp_HS(Yhim, factor, nl, nc, shift):
+    """
+    将 HSI 立方体零填充上采样到 (nl, nc)，采样点位于：
+      行: shift, shift+factor, ...
+      列: shift, shift+factor, ...
+    与 MATLAB 中的 mask/upsample phase 对齐（0-based 对应 MATLAB 的 shift）。
+    """
+    nlh, nch, L = Yhim.shape
+    out = np.zeros((nl, nc, L), dtype=Yhim.dtype)
+
+    # 目标网格上可放置的坐标个数
+    rows = np.arange(shift, nl, factor)
+    cols = np.arange(shift, nc, factor)
+    assert len(rows) == nlh and len(cols) == nch, \
+        "上采样尺寸与 (nlh,nch) / factor / shift 不匹配"
+
+    out[np.ix_(rows, cols, np.arange(L))] = Yhim
+    return out
+
+
+def downsamp_HS(img, factor, shift):
+    """
+    简单网格抽取下采样：
+    输入 img: (nl, nc, bands)，输出 (nl//factor, nc//factor, bands)，
+    采样网格起点为 shift。
+    """
+    nl, nc, nb = img.shape
+    rows = np.arange(shift, nl, factor)
+    cols = np.arange(shift, nc, factor)
+    return img[np.ix_(rows, cols, np.arange(nb))]
+
+
+def center_embed_kernel(B_full, k, center, blur_center=0):
+
+    h, w = k.shape
+    nl, nc = B_full.shape
+    ml, mc = center
+
+    # 计算放置范围（与 MATLAB 处理偶/奇尺寸的逻辑一致）
+    if h % 2 == 0:
+        r0 = ml - (h - 1) // 2 - 1 - blur_center
+        r1 = ml + (h - 1) // 2     - blur_center
+    else:
+        r0 = ml - (h - 1) // 2     - blur_center
+        r1 = ml + (h - 1) // 2     - blur_center
+
+    if w % 2 == 0:
+        c0 = mc - (w - 1) // 2 - 1 - blur_center
+        c1 = mc + (w - 1) // 2     - blur_center
+    else:
+        c0 = mc - (w - 1) // 2     - blur_center
+        c1 = mc + (w - 1) // 2     - blur_center
+
+    # 边界裁剪（防止越界）
+    r0 = max(r0, 0)
+    c0 = max(c0, 0)
+    r1 = min(r1, nl - 1)
+    c1 = min(c1, nc - 1)
+
+    kh0 = 0
+    kw0 = 0
+    kh1 = h - 1
+    kw1 = w - 1
+
+    # 如果裁剪了，需要同步裁剪核的放置区域
+    if (r1 - r0 + 1) != h:
+        # 顶部被裁 或 底部被裁
+        if r0 == 0:
+            kh0 = h - (r1 - r0 + 1)
+        else:
+            kh1 = kh0 + (r1 - r0)
+
+    if (c1 - c0 + 1) != w:
+        # 左侧被裁 或 右侧被裁
+        if c0 == 0:
+            kw0 = w - (c1 - c0 + 1)
+        else:
+            kw1 = kw0 + (c1 - c0)
+
+    B_full[r0:r1 + 1, c0:c1 + 1] = k[kh0:kh1 + 1, kw0:kw1 + 1]
+    return B_full
+
 
 def upsample(img, nl, nc, band, sf):
     aux = np.zeros([nl, nc, band])
@@ -35,6 +118,28 @@ def upsample(img, nl, nc, band, sf):
         aux[sf // 2 - 1::sf, sf // 2 - 1::sf, i] = img[:, :, i]
     return aux
 
+def im2mat(img_cube):
+    """
+    (nl, nc, bands) -> (bands, nl*nc)
+    """
+    nl, nc, nb = img_cube.shape
+    return img_cube.reshape(nl * nc, nb).T
+
+
+def mat2im(mat, nl, nc):
+    """
+    (bands, nl*nc) -> (nl, nc, bands)
+    """
+    nb, _ = mat.shape
+    return mat.T.reshape(nl, nc, nb)
+
+def fspecial_average(h, w):
+    """
+    平均核 (h, w)，与 MATLAB fspecial('average', [h w]) 一致
+    """
+    k = np.ones((h, w), dtype=np.float64)
+    k /= k.sum()
+    return k
 
 def get_mask(sf, nc, nl, bands):
     mask = np.zeros([nc, nl])
@@ -43,9 +148,9 @@ def get_mask(sf, nc, nl, bands):
     mask = maskim.reshape([-1, bands])
     return mask
 
-
 class HySure():
     def __init__(self, args):
+        self.opt = args
         self.sf = args.sf
         self.lam_p, self.lam_r, self.lam_m = args.lam_p, args.lam_r, args.lam_m
 
@@ -53,8 +158,22 @@ class HySure():
         self.R = srf.T
         self.psf = psf
 
-    def __call__(self, LR_HSI, HR_MSI,dataset_name):
+    def __call__(self, LR_HSI, HR_MSI):
         start_time = time()
+        non_del_bands = np.arange(31)
+        # 模拟 ms_bands = [1,2,3] 三个区间
+        ms_band_ranges = [range(10), range(9, 20), range(19, 32)]
+
+        intersection = []
+        contiguous = []
+
+        for band_range in ms_band_ranges:
+            band_range = np.array(list(band_range))
+            common, i_non_del, i_band = np.intersect1d(non_del_bands, band_range, return_indices=True)
+            intersection.append(i_non_del)  # 对应在 non_del_bands 中的索引位置
+            contiguous.append(i_band)  # 对应在原 band_range 中的索引位置
+
+
         '''
         I. Precomputations. 
         '''
@@ -88,6 +207,11 @@ class HySure():
         middlec - _fake_sf // 2 - 1:middlec + _fake_sf // 2] = self.psf
         B = ifftshift(B).real
         B = B / sum(sum(B))
+
+        if self.opt.isCal_PSF:
+            V, self.R,B = sen_resp_est(LR_HSI, HR_MSI, self.sf, intersection, contiguous, 10, 1e1, 1e1, self.sf, self.sf,
+                                        self.sf // 2, 0, is_calSRF=False, R=self.R)
+
         FB = fft2(B)
         FBC = np.conj(FB)
         Down_C = abs(FB) ** 2 + abs(FDH) ** 2 + abs(FDV) ** 2 + 1
