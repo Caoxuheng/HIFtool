@@ -43,7 +43,11 @@ class Spatial_Degradation(nn.Module):
             stride = sf
         if batch ==1 :
 
-            self.down = nn.Conv2d(in_channels=1,out_channels=1,kernel_size=sf,stride=stride-1,bias=None)
+            # Match the CAVE synthesis operator: valid convolution followed
+            # by sampling exactly every ``sf`` pixels.  ``stride-1`` was an
+            # upstream off-by-one bug and makes known-PSF outputs incompatible
+            # with the observed LR-HSI dimensions.
+            self.down = nn.Conv2d(in_channels=1,out_channels=1,kernel_size=sf,stride=stride,bias=None)
             self.down.weight.data[0,0] = kernel
         self.down.requires_grad_(False)
 
