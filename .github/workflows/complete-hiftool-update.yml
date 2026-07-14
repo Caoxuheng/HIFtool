@@ -1,0 +1,48 @@
+name: Complete HIFtool source update
+
+on:
+  push:
+    branches:
+      - agent/update-hiftool-source-20260715
+    paths:
+      - .github/workflows/complete-hiftool-update.yml
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out update branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reconstruct and verify source file
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .hiftool_update_parts/*.txt > Networks/DTDNML/network.py
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+
+          path = Path("Networks/DTDNML/network.py")
+          content = path.read_bytes()
+          digest = hashlib.sha1()
+          digest.update(f"blob {len(content)}\0".encode())
+          digest.update(content)
+          actual = digest.hexdigest()
+          expected = "51414866ee6911bbb17976caf28e921577c55e8f"
+          if actual != expected:
+              raise SystemExit(f"Blob verification failed: expected {expected}, got {actual}")
+          print(f"Verified {path}: {actual}")
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Networks/DTDNML/network.py
+          git commit -m "Complete HIFtool source update"
+          git push
