@@ -179,8 +179,7 @@ class udaln():
 
         self.GT=GT
         out2 = self.Spectral_down_net(GT)
-        plt.imshow(np.hstack([out2[0, 1].detach().cpu().numpy(), hmsi[0,1].detach().cpu().numpy()]))
-        plt.show()
+        # Avoid blocking non-interactive benchmark runs with a matplotlib window.
         print('\nStage 1 Finished')
 
         '''
