@@ -15,27 +15,18 @@ def minimize(args):
 
 def Modification(X_in,hrrgb,srf,data='chikusei'):
     H,W,band = X_in.shape
-    msiband = hrrgb.shape[-1]
-    n_poly = 3
-
-    lam_mat = np.empty([n_poly,band])
-    for i in range(n_poly):
-        for j in range(band):
-            lam_mat[i] = pow(0.4+0.01*j,i)
-    init = X_in.reshape([-1,1,band]) * lam_mat
-    init_rgb = init @ srf
-    lam = init_rgb
-    rgb1 =hrrgb.reshape([-1,msiband])
-    x = [1, 0, 0]
-    args = [(x, lam[i], rgb1[i]) for i in range(W*H)]
     print('\r\033[1;31mActivating...\033[0m', end='')
     start_time = time.time()
-    with ProcessPoolExecutor() as executor:
-        results = executor.map(minimize,args)
-
-    results =np.array(list(results)).reshape([-1,1,n_poly])
-    a = np.matmul(results,init.reshape([-1,n_poly,band]))
-    X_act = a.reshape([W,H,band])
+    # The original CPU code launched one BFGS process per pixel for a linear
+    # least-squares problem.  Solve all 3x3 systems in a batch instead; this
+    # is mathematically equivalent and makes the no-CUDA fallback practical.
+    wavelengths = np.arange(0.40, 0.40 + 0.01 * band, 0.01, dtype=X_in.dtype)
+    basis = np.stack((X_in, X_in * wavelengths, X_in * wavelengths ** 2), axis=-2)
+    rgb_basis = basis @ srf  # H, W, polynomial-basis, MSI-band
+    gram = rgb_basis @ np.swapaxes(rgb_basis, -1, -2)
+    rhs = rgb_basis @ hrrgb[..., None]
+    weights = np.linalg.solve(gram + 1e-8 * np.eye(3, dtype=X_in.dtype), rhs)[..., 0]
+    X_act = (basis * weights[..., :, None]).sum(axis=-2)
     end_time = time.time()
     print('\r\033[1;32mModification Successfully \033[0m')
     print('Modification Time Cost: {:.3f}s \n'.format(end_time-start_time))
