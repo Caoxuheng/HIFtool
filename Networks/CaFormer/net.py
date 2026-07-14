@@ -312,7 +312,7 @@ class CaBlock(nn.Module):
 
 
 class CaFormer(nn.Module):
-    def __init__(self, sf,in_c=31,out_c, n_feat=64, nums_stages=5, n_depth=3):
+    def __init__(self, sf, in_c=31, out_c=3, n_feat=64, nums_stages=5, n_depth=3):
         super(CaFormer, self).__init__()
 
         self.conv_tomsi = torch.nn.Conv2d(in_channels=in_c, out_channels=out_c, kernel_size=3, stride=1, padding=3 // 2)
