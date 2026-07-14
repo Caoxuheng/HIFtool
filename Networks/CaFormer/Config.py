@@ -8,4 +8,4 @@ parser.add_argument('--patch_size',type=int,default=80, help='patch size for tra
 
 parser.add_argument('--n_depth',type=int,default=3, help='depth number of the autoencoder embedded in prior learning module')
 parser.add_argument('--n_feat',type=int,default=64, help='feature number of the autoencoder')
-args=parser.parse_args()
+args=parser.parse_known_args()[0]
