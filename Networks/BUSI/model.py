@@ -90,7 +90,15 @@ class Fullcnn(torch.nn.Module):
 
     def forward(self, Iryb, Ispec, pos):
         ksz = self.args.ker_sz # kernel border
-        imsz = self.args.imsz
+        # HIFtool may evaluate full images, tiles, or patches.  Do not rely on
+        # the training-patch size stored in the config: derive the actual
+        # spatial size from the MSI presented to the model.
+        batch, _, height, width = Iryb.shape
+        if height % ksz or width % ksz:
+            raise ValueError(
+                f'BUSI requires HR dimensions divisible by ker_sz={ksz}, '
+                f'got {(height, width)}.'
+            )
 
         if self.args.isCal_PSF:
             Conv = self.convfcn(self.input_2D) ** 2
@@ -103,13 +111,19 @@ class Fullcnn(torch.nn.Module):
 
         spec_cnn = self.specsrcnn(Iryb, Ispec, Phi, Conv, pos)
 
-        pre_ryb_cnn = torch.matmul(Phi.transpose(1, 0), spec_cnn.view(-1, 31, imsz**2)).view(-1, 3, imsz, imsz)
+        spectral_bands = spec_cnn.shape[1]
+        msi_bands = Phi.shape[1]
+        pre_ryb_cnn = torch.matmul(
+            Phi.transpose(1, 0), spec_cnn.reshape(batch, spectral_bands, height * width)
+        ).reshape(batch, msi_bands, height, width)
 
-        temp_spec_cnn = spec_cnn.view((31, imsz // ksz, ksz, imsz // ksz, ksz)).permute(0, 1, 3, 2, 4)
-        pre_spec_cnn = torch.permute(
-            torch.matmul(temp_spec_cnn.reshape(31, imsz // ksz, imsz // ksz, ksz**2), Conv.reshape(ksz**2, 1)),
-            [3,0,1,2]
-        )
+        temp_spec_cnn = spec_cnn.reshape(
+            batch, spectral_bands, height // ksz, ksz, width // ksz, ksz
+        ).permute(0, 1, 2, 4, 3, 5)
+        pre_spec_cnn = torch.matmul(
+            temp_spec_cnn.reshape(batch, spectral_bands, height // ksz, width // ksz, ksz**2),
+            Conv.reshape(ksz**2, 1),
+        ).squeeze(-1)
 
 
 
@@ -140,7 +154,7 @@ class BUSI():
             tv_wei = 1.8
             lowrank_wei = 0.02
 
-        for epoch in range(2000):
+        for epoch in range(self.args.max_epoch):
 
             resspec_cnn, ryb_pred_cnn, spec_pred_cnn, phi, kernel = self.busi(HRMSI, LRHSI,pos[None])
 
