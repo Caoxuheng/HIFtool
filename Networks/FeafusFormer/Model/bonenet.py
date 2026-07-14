@@ -128,9 +128,10 @@ class SpaFM(nn.Module):
         return F.elu( self.bn(self.refine(Error))+x)
 
 class MultiLevelFus(nn.Module):
-    def __init__(self,HSI,MSI,srf):
+    def __init__(self,HSI,MSI,srf,residual_bound=0.05):
         super(MultiLevelFus, self).__init__()
         self.T_H,self.T_W = MSI.shape[2:]
+        self.residual_bound = residual_bound
         HSIband, MSIband = HSI.shape[1],MSI.shape[1]
         Head = 5
         self.attention = MultiHeadAttention(Head, HSIband,HSIband//5)
@@ -201,4 +202,9 @@ class MultiLevelFus(nn.Module):
         HSI_c = self.attention3(feature2, feature, HSI_c)
         HSI_c = self.rm(HSI_c, self.MSI)
 
-        return HSI_c
+        # The upstream network discarded coarse_HSI at the output, so a random
+        # zero-shot generator could satisfy degradation losses while becoming
+        # much worse than simple interpolation.  Predict only a bounded
+        # residual around the observed LR-HSI baseline.
+        residual = torch.tanh(HSI_c - self.coarse_HSI)
+        return torch.clamp(self.coarse_HSI + self.residual_bound * residual, 0.0, 1.0)
