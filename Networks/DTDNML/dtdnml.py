@@ -165,10 +165,10 @@ class DTDNML(BaseModel):
         # LOSS
         if self.opt.avg_crite == "No":
             # self.L1loss = torch.nn.MSELoss(size_average=False).to(self.device)
-            self.L1loss = torch.nn.L1Loss(size_average=False).to(self.device)
+            self.L1loss = torch.nn.L1Loss(reduction="sum").to(self.device)
         else:
             # self.L1loss = torch.nn.MSELoss(size_average=True).to(self.device)
-            self.L1loss = torch.nn.L1Loss(size_average=True).to(self.device)
+            self.L1loss = torch.nn.L1Loss(reduction="mean").to(self.device)
 
         self.model_names = [
             "hrmsi_feature",
@@ -469,4 +469,6 @@ class DTDNML(BaseModel):
         return self.loss_joint
     def __call__(self,LRHSI,HRMSI,GT):
         self.set_input(LRHSI,HRMSI,GT)
-        self.optimize_joint_parameters()
+        for _ in range(self.opt.max_epoch):
+            self.optimize_joint_parameters()
+        return self.rec_hrhsi
