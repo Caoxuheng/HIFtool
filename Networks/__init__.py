@@ -8,7 +8,8 @@ def model_generator(method:str, device="cuda"):
         from .CaFormer.net import CaFormer
         from .CaFormer.Config import args as opt
         num_iterations = int(method.split('_')[-1])
-        model = CaFormer(sf=opt.sf,in_c=opt.msi_channel, n_feat=opt.n_feat, nums_stages=num_iterations - 1,n_depth=opt.n_depth).to(device)
+        model = CaFormer(sf=opt.sf, in_c=opt.hsi_channel, out_c=opt.msi_channel,
+                         n_feat=opt.n_feat, nums_stages=num_iterations - 1, n_depth=opt.n_depth).to(device)
     elif 'DTDNML' in method:
         from .DTDNML.dtdnml import DTDNML
         from .DTDNML.Config import args as opt
@@ -18,6 +19,9 @@ def model_generator(method:str, device="cuda"):
     elif 'BUSI' in method:
         from .BUSI.model import BUSI
         from .BUSI.Config import args as opt
+        # BUSIFusion uses ker_sz as both its PSF kernel size and the synthetic
+        # spatial scale.  Keep it in sync with --sf for CAVE/HARVARD.
+        opt.ker_sz = opt.sf
         model = BUSI(opt)
 
     elif 'UTAL' in method:
@@ -58,6 +62,10 @@ def model_generator(method:str, device="cuda"):
         from .DCTransformer.net import DCT
         from .DCTransformer.Config import opt
         model =DCT(opt.hsi_channel,opt.msi_channel, opt.sf).to(device)
+    elif 'PSTUN' in method:
+        from .PSTUN.net import PSTUN
+        from .PSTUN.config import opt
+        model = PSTUN(in_channels=opt.msi_channel, in_feat=32, out_channels=opt.hsi_channel).to(device)
     elif 'HyMS' in method:
         from .HyMS.config import args
         from .HyMS.main_gpu import HyMS
@@ -75,7 +83,7 @@ def model_generator(method:str, device="cuda"):
         from .UDALN.config import args as opt
 
         # sp_range = [list(range(30)),list(range(13,50)),list(range(41,84)),list(range(68,128))]
-        sp_range = np.array([[0,30],[13, 50], [41, 84], [68, 127]])
+        sp_range = np.array([[0, 10], [10, 20], [20, 31]])
         model = udaln(opt,sp_range)
     elif 'DBSR' in method:
         from .DBSR.net import DBSR
@@ -85,17 +93,16 @@ def model_generator(method:str, device="cuda"):
     elif 'FeafusFormer' in method:
         from .FeafusFormer.net import Feafusformer
         from .FeafusFormer.config import opt
-        sp_range = [list(range(30)),list(range(13,50)),list(range(41,84)),list(range(68,128))]
+        sp_range = [list(range(0, 10)), list(range(10, 20)), list(range(20, 31))]
         # sp_range = np.array([range(4)])
         model = Feafusformer(opt,sp_range,device)
     elif 'ZSL' in method:
-        from .ZSL.net import ZSL
-        from .ZSL.config import opt
-
-        model = ZSL(opt)
+        raise NotImplementedError(
+            'ZSL is an incomplete upstream source snapshot and has no runnable evaluation implementation.'
+        )
 
     
     else:
-        print(f'opt.Method {method} is not defined !!!!')
+        raise ValueError(f'Method {method!r} is not defined.')
 
     return model, opt
