@@ -23,6 +23,7 @@ parser.add_argument("--avg_crite", type=str, default="No")
 parser.add_argument('--concat',type=str, default="Yes",help='')
 parser.add_argument('--gpu_ids',type=list, default=[0],help='GPU ID')
 parser.add_argument('--lr',type=float, default=1e-4,help='learning_rate')
+parser.add_argument('--max_epoch', type=int, default=1, help='per-image optimisation iterations')
 
 parser.add_argument('--num_theta',type=float, default=30,help='num_theta')
 parser.add_argument('--lambda_A',type=float, default=0.1,help='num_theta')
@@ -41,4 +42,4 @@ parser.add_argument('--lambda_F',type=float, default=100,help='num_theta')
 
 
 
-args=parser.parse_args()
+args=parser.parse_known_args()[0]
