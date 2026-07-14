@@ -30,6 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Source fragments were verified locally before this retry.
           cat .hiftool_update_parts/*.txt > Networks/DTDNML/network.py
           python - <<'PY'
           from pathlib import Path
