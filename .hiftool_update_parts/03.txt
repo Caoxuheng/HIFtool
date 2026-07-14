@@ -1,0 +1,156 @@
+upsample_feature_1.permute(0, 2, 1, 3)
+        upsample_feature_1 = self.transfer_H_NH(upsample_feature_1)
+        upsample_feature_1 = upsample_feature_1.permute(0, 2, 1, 3)
+
+        # transfer W to NW
+        upsample_feature_1 = upsample_feature_1.permute(0, 3, 2, 1)
+        upsample_feature_1 = self.transfer_W_NW(upsample_feature_1)
+        upsample_feature_1 = upsample_feature_1.permute(0, 3, 2, 1)
+        return upsample_feature_1
+        
+
+def define_feature_unet(
+    out_channel, scale, H, Hc, W, Wc, gpu_ids, init_type="kaiming", init_gain=0.02
+):
+    net = FeatureUNet(out_channel, scale, H, Hc, W, Wc)
+    return init_net(net=net, init_type=init_type, init_gain=init_gain, gpu_ids=gpu_ids)
+
+
+
+def define_hrmsi_feature(
+    in_channel, out_channel, gpu_ids, init_type="kaiming", init_gain=0.02
+):
+    net = GenerateFeatureHrMSI(in_channel=in_channel, out_channel=out_channel)
+    return init_net(net=net, init_type=init_type, init_gain=init_gain, gpu_ids=gpu_ids)
+
+
+class GenerateFeatureHrMSI(nn.Module):
+    def __init__(self, in_channel, out_channel):
+        super(GenerateFeatureHrMSI, self).__init__()
+
+        self.feature_embedding = nn.Sequential(
+            nn.Conv2d(
+                in_channels=in_channel,
+                out_channels=64,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64, out_channels=64 * 2, kernel_size=3, padding=1, stride=1
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64 * 2,
+                out_channels=64 * 4,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64 * 4,
+                out_channels=out_channel,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+            ),
+            nn.ReLU(),
+        )
+
+    def forward(self, x):
+        msi_feature = self.feature_embedding(x)
+        return msi_feature
+
+
+def define_lrhsi_feature(
+    in_channel, out_channel, gpu_ids, init_type="kaiming", init_gain=0.02
+):
+    net = GenerateFeatureLrHSI(in_channel=in_channel, out_channel=out_channel)
+    return init_net(net=net, init_type=init_type, init_gain=init_gain, gpu_ids=gpu_ids)
+
+
+class GenerateFeatureLrHSI(nn.Module):
+    def __init__(self, in_channel, out_channel):
+        super(GenerateFeatureLrHSI, self).__init__()
+        self.feature_embedding = nn.Sequential(
+            nn.Conv2d(
+                in_channels=in_channel,
+                out_channels=64,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64, out_channels=64 * 2, kernel_size=3, padding=1, stride=1
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64 * 2,
+                out_channels=64 * 4,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+            ),
+            nn.ReLU(),
+            nn.Conv2d(
+                in_channels=64 * 4,
+                out_channels=out_channel,
+                kernel_size=3,
+                padding=1,
+                stride=1,
+            ),
+            nn.ReLU(),
+        )
+
+    def forward(self, x):
+        lr_hsi_feature = self.feature_embedding(x)
+        return lr_hsi_feature
+
+
+def define_lrdict_wh(
+    code_scale, hsi_scale_w, hsi_scale_h, gpu_ids, init_type="normal", init_gain=0.02
+):
+    net = LrHSIDictionaryWH(
+        code_scale=code_scale, hsi_scale_w=hsi_scale_w, hsi_scale_h=hsi_scale_h
+    )
+    return init_net(net=net, init_type=init_type, init_gain=init_gain, gpu_ids=gpu_ids)
+
+
+class LrHSIDictionaryWH(nn.Module):
+    def __init__(self, code_scale, hsi_scale_w, hsi_scale_h):
+        # 字典的更新，用卷积层代替
+        super(LrHSIDictionaryWH, self).__init__()
+        self.conv_w = nn.Conv2d(code_scale[0], hsi_scale_w, kernel_size=1, stride=1, padding=0, bias=False)
+        self.conv_h = nn.Conv2d(code_scale[1], hsi_scale_h, kernel_size=1, stride=1, padding=0, bias=False)
+
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        # batch, channel, height, weight = list(x.size())
+        nx = x.permute(0, 2, 1, 3)
+        nx = self.conv_w(nx)
+        nx = nx.permute(0, 2, 1, 3)
+
+        nx = nx.permute(0, 3, 2, 1)
+        nx = self.conv_h(nx)
+        nx = nx.permute(0, 3, 2, 1)
+        return nx
+
+
+def define_lrdict_wht(
+    code_scale, hsi_scale_w, hsi_scale_h, gpu_ids, init_type="normal", init_gain=0.02
+):
+    net = LrHSIDictionaryWHT(
+        code_scale=code_scale, hsi_scale_w=hsi_scale_w, hsi_scale_h=hsi_scale_h
+    )
+    return init_net(net=net, init_type=init_type, init_gain=init_gain, gpu_ids=gpu_ids)
+
+
+
+class LrHSIDictionaryWHT(nn.Module):
+    def __init__(self, code_scale, hsi_scale_w, hsi_scale_h):
+        # 字典的更新，用卷积层代替
+        super(LrHSIDictionaryWHT, se

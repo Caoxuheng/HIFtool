@@ -1,0 +1,99 @@
+re_iter_1)
+        lr_hsi_feature_iter_2 = lr_hsi_feature_iter_1
+        # lr_hsi_feature_iter_2 = self.crate2(lr_hsi_feature_iter_1)
+
+        if not transformer:
+            # channel attention_2
+            avg_channel_2 = self.avg_pool_2d(lr_hsi_feature_iter_2)
+            max_channel_2 = self.max_pool_2d(lr_hsi_feature_iter_2)
+            avg_out_2 = self.fc_2_2(self.relu(self.fc_2_1(avg_channel_2)))
+            max_out_2 = self.fc_2_2(self.relu(self.fc_2_1(max_channel_2)))
+            channel_out_2 = avg_out_2 + max_out_2
+            channel_out_2 = self.sigmoid(channel_out_2)
+            feature_downsample_2 = feature_downsample_2 * channel_out_2
+            lr_hsi_feature_iter_2 = (
+                    lr_hsi_feature_iter_2 + lr_hsi_feature_iter_2 * channel_out_2
+            )
+        else:
+            # Transformer to extract channel attention
+            lr_hsi_feature_iter_2, spe_attn_2 = self.ssab2(lr_hsi_feature_iter_2)  # spe_attn_2: [C, C]
+            _, c, h, w = feature_downsample_2.shape
+            feature_downsample_2 = ((feature_downsample_2.squeeze().reshape([c, h * w]).T) @ spe_attn_2).T.reshape(c, h,
+                                                                                                                   w).unsqueeze(
+                0)
+
+        feature_downsample_2_next_in = self.dowmsample_2(feature_downsample_2)
+
+        # downsample 3
+        feature_downsample_3 = self.relu(
+            feature_downsample_2_next_in + self.down_sample_conv_list_3(feature_downsample_2_next_in))
+        # feature_downsample_3 = self.relu(feature_downsample_2_next_in + self.msi_crate_3(feature_downsample_2_next_in))
+        # lr_hsi_feature_iter_3 = self.lr_hsi_compress_3(lr_hsi_feature_iter_2)
+        # lr_hsi_feature_iter_3 = lr_hsi_feature_iter_2
+        lr_hsi_feature_iter_3 = self.crate3(lr_hsi_feature_iter_2)
+
+        if not transformer:
+            # channel attention_3
+            avg_channel_3 = self.avg_pool_2d(lr_hsi_feature_iter_3)
+            max_channel_3 = self.max_pool_2d(lr_hsi_feature_iter_3)
+            avg_out_3 = self.fc_3_2(self.relu(self.fc_3_1(avg_channel_3)))
+            max_out_3 = self.fc_3_2(self.relu(self.fc_3_1(max_channel_3)))
+            channel_out_3 = avg_out_3 + max_out_3
+            channel_out_3 = self.sigmoid(channel_out_3)
+            feature_downsample_3 = feature_downsample_3 * channel_out_3
+            lr_hsi_feature_iter_3 = (
+                    lr_hsi_feature_iter_3 + lr_hsi_feature_iter_3 * channel_out_3
+            )
+        else:
+            # Transformer to extract channel attention
+            lr_hsi_feature_iter_3, spe_attn_3 = self.ssab3(lr_hsi_feature_iter_3)  # spe_attn_1: [C, C]
+            _, c, h, w = feature_downsample_3.shape
+            feature_downsample_3 = ((feature_downsample_3.squeeze().reshape([c, h * w]).T) @ spe_attn_3).T.reshape(c, h,
+                                                                                                                   w).unsqueeze(
+                0)
+
+        feature_downsample_3_next_in = self.dowmsample_3(feature_downsample_3)
+
+        # downsample 4
+        feature_downsample_4 = self.relu(
+            feature_downsample_3_next_in
+            + self.down_sample_conv_list_4(feature_downsample_3_next_in)
+        )
+        lr_hsi_feature_iter_4 = lr_hsi_feature_iter_3
+
+        if not transformer:
+            # channel attention_4
+            avg_channel_7 = self.avg_pool_2d(lr_hsi_feature_iter_4)
+            max_channel_7 = self.max_pool_2d(lr_hsi_feature_iter_4)
+            avg_out_7 = self.fc_7_2(self.relu(self.fc_7_1(avg_channel_7)))
+            max_out_7 = self.fc_7_2(self.relu(self.fc_7_1(max_channel_7)))
+            channel_out_7 = avg_out_7 + max_out_7
+            channel_out_7 = self.sigmoid(channel_out_7)
+            feature_downsample_4 = feature_downsample_4 * channel_out_7
+            lr_hsi_feature_iter_4 = (
+                lr_hsi_feature_iter_4 + lr_hsi_feature_iter_4 * channel_out_7
+            )
+
+        feature_downsample_4_next_in = self.dowmsample_4(feature_downsample_4)
+
+        # downsample 5
+        feature_downsample_5 = self.relu(
+            feature_downsample_4_next_in
+            + self.down_sample_conv_list_5(feature_downsample_4_next_in)
+        )
+        lr_hsi_feature_iter_5 = lr_hsi_feature_iter_4
+
+        if not transformer:
+            # channel attention_5
+            avg_channel_8 = self.avg_pool_2d(lr_hsi_feature_iter_5)
+            max_channel_8 = self.max_pool_2d(lr_hsi_feature_iter_5)
+            avg_out_8 = self.fc_8_2(self.relu(self.fc_8_1(avg_channel_8)))
+            max_out_8 = self.fc_8_2(self.relu(self.fc_8_1(max_channel_8)))
+            channel_out_8 = avg_out_8 + max_out_8
+            channel_out_8 = self.sigmoid(channel_out_8)
+            feature_downsample_5 = feature_downsample_5 * channel_out_8
+            lr_hsi_feature_iter_5 = (
+                lr_hsi_feature_iter_5 + lr_hsi_feature_iter_5 * channel_out_8
+            )
+
+        feature_dow

@@ -1,0 +1,74 @@
+
+        )
+
+        self.avg_pool_2d = nn.AdaptiveAvgPool2d(1)
+        self.max_pool_2d = nn.AdaptiveMaxPool2d(1)
+        self.fc_1_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_1_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_2_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_2_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_3_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_3_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_4_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_4_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_5_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_5_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_6_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_6_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_7_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_7_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_8_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_8_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_9_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_9_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+        self.fc_10_1 = nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, bias=False)
+        self.fc_10_2 = nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, bias=False)
+
+        self.conv_1_3x3 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=3, stride=1, padding=1)
+        self.conv_2_3x3 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=3, stride=1, padding=1)
+        self.conv_3_3x3 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=3, stride=1, padding=1)
+        self.conv_4_3x3 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=3, stride=1, padding=1)
+        self.conv_5_3x3 = nn.Conv2d(in_channels=2, out_channels=1, kernel_size=3, stride=1, padding=1)
+
+        self.relu = nn.ReLU()
+
+        self.upsample = nn.Upsample(scale_factor=scale, mode="bicubic")
+
+        self.conv_channel_hsi = nn.Sequential(
+            nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel // 2, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+        )
+        self.lr_hsi_compress_1 = nn.Sequential(
+            nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+        )
+
+        self.lr_hsi_compress_2 = nn.Sequential(
+            nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+        )
+
+        self.lr_hsi_compress_3 = nn.Sequential(
+            nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+        )
+
+        self.lr_hsi_compress_4 = nn.Sequential(
+            nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=out_channel // 2, out_channels=out_channel, kernel_size=1, stride=1, padding=0),
+            nn.ReLU(),
+        )
+
+        self.lr_hsi_compress_5 = nn.Sequential(
+            nn.Conv2d(in_channels=out_channel, out_channels=out_channel // 2, kernel_size=1, stride=

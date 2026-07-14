@@ -1,0 +1,23 @@
+ature], dim=1)
+        feature_in = self.conv_channel(hr_msi_feature)
+
+        # downsample 1
+        feature_downsample_1 = self.relu(feature_in + self.down_sample_conv_list_1(feature_in))
+        # feature_downsample_1 = self.relu(feature_in + self.msi_crate_1(feature_in))
+        # lr_hsi_feature_iter_1 = self.lr_hsi_compress_1(lr_hsi_feature_iter)
+        lr_hsi_feature_iter_1 = lr_hsi_feature_iter
+        # lr_hsi_feature_iter_1 = self.crate1(lr_hsi_feature_iter)
+
+        if not transformer:
+            # channel attention_1
+            avg_channel_1 = self.avg_pool_2d(lr_hsi_feature_iter_1)
+            max_channel_1 = self.max_pool_2d(lr_hsi_feature_iter_1)
+            avg_out_1 = self.fc_1_2(self.relu(self.fc_1_1(avg_channel_1)))
+            max_out_1 = self.fc_1_2(self.relu(self.fc_1_1(max_channel_1)))
+            channel_out_1 = avg_out_1 + max_out_1
+            channel_out_1 = self.sigmoid(channel_out_1)
+            # if (epoch % 100) == 0:
+            #     # save the feature map
+            #     import scipy.io as sio
+            #     save_mat = {"channel_out_1":channel_out_1.data.cpu().float().numpy()}
+            #     sio.savemat("/data/hewang/tensor_factorizat

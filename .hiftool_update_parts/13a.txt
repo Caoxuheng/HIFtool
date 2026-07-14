@@ -1,0 +1,26 @@
+
+        spatial_out_1 = self.sigmoid(self.conv_3_3x3(spatial_out_1))
+
+        skip_connection_feature_1 = skip_connection_feature_1 * spatial_out_1
+        # spectral attention from lrhsi itself
+        if transformer:
+            avg_channel_6 = self.avg_pool_2d(upsample_feature_1)
+            max_channel_6 = self.max_pool_2d(upsample_feature_1)
+            avg_out_6 = self.fc_6_2(self.relu(self.fc_6_1(avg_channel_6)))
+            max_out_6 = self.fc_6_2(self.relu(self.fc_6_1(max_channel_6)))
+            channel_out_6 = avg_out_6 + max_out_6
+            channel_out_6 = self.sigmoid(channel_out_6)
+            upsample_feature_1 = upsample_feature_1 * channel_out_6
+        else:
+            upsample_feature_1 = ((upsample_feature_1.squeeze().reshape([c, h * w]).T) @ spe_attn_1).T.reshape(c, h,
+                                                                                                               w).unsqueeze(
+                0)
+        # concat the features with spatial attention
+        upsample_feature_1 = self.skip_up_conv_3(
+            torch.cat([upsample_feature_1, skip_connection_feature_1], dim=1)
+        )
+        # if (epoch % 100) == 0:
+        #     # save the feature map
+        #     import scipy.io as sio
+        #     save_mat = {"upsample_feature_1":upsample_feature_1.detach().data.cpu().float().numpy()}
+        #     sio.savemat(r"D:\\Dataset\\tensor_

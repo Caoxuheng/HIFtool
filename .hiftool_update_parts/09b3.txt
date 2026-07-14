@@ -1,0 +1,22 @@
+/Pavia_scale_8/feature_map/spec_attn1_{}.mat".format(epoch),
+            #                 save_mat)
+            feature_downsample_1 = feature_downsample_1 * channel_out_1
+            lr_hsi_feature_iter_1 = (
+                    lr_hsi_feature_iter_1 + lr_hsi_feature_iter_1 * channel_out_1
+            )
+        else:
+            # Transformer to extract channel attention
+            lr_hsi_feature_iter_1, spe_attn_1 = self.ssab1(lr_hsi_feature_iter_1)  # spe_attn_1: [C, C]
+            _, c, h, w = feature_downsample_1.shape
+            feature_downsample_1 = (
+                        (feature_downsample_1.squeeze().reshape([c, h * w]).T) @ spe_attn_1.squeeze()).T.reshape(c, h,
+                                                                                                                 w).unsqueeze(
+                0)
+
+        feature_downsample_1_next_in = self.dowmsample_1(feature_downsample_1)
+
+        # downsample 2
+        feature_downsample_2 = self.relu(
+            feature_downsample_1_next_in + self.down_sample_conv_list_2(feature_downsample_1_next_in))
+        # feature_downsample_2 = self.relu(feature_downsample_1_next_in + self.msi_crate_2(feature_downsample_1_next_in))
+        # lr_hsi_feature_iter_2 = self.lr_hsi_compress_2(lr_hsi_featu

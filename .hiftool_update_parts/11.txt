@@ -1,0 +1,87 @@
+nsample_5_next_in = self.dowmsample_5(feature_downsample_5)
+
+        # bottom conv feature
+        # The decoder has five 2x downsampling stages, so its bottleneck is
+        # always HR / 32.  The original integration passed the LR-HSI feature
+        # through unchanged, which only has that size at sf=32 (and fails for
+        # sf=8/16).  Align it to the actual bottleneck instead of assuming a
+        # particular scale factor.  Adaptive pooling is used here because it
+        # preserves the low-resolution observation grid without introducing
+        # bicubic ringing in the latent feature.
+        lr_feature_bottleneck = F.adaptive_avg_pool2d(
+            lr_hsi_feature_iter_3, feature_downsample_5_next_in.shape[-2:]
+        )
+        feature_bottom = self.bottom_layer(
+            torch.cat([feature_downsample_5_next_in, lr_feature_bottleneck], dim=1)
+        )
+        transformer = True
+
+       # upsample 5
+        transformer = True
+        # upsample the feature with spatial attention with itself
+        upsample_feature_5 = self.up_sample_conv_5(feature_bottom)
+        skip_connection_feature_5 = self.skip_connection_5(feature_downsample_5)
+        # first spatial attention from skip feature
+        spatial_avg_out_5 = torch.mean(skip_connection_feature_5, dim=1, keepdim=True)
+        spatial_max_out_5, _ = torch.max(skip_connection_feature_5, dim=1, keepdim=True)
+        spatial_out_5 = torch.cat([spatial_avg_out_5, spatial_max_out_5], dim=1)
+        spatial_out_5 = self.sigmoid(self.conv_4_3x3(spatial_out_5))
+        upsample_feature_5 = upsample_feature_5 * spatial_out_5
+        # second spatial attention from itself
+        spatial_avg_out_5 = torch.mean(upsample_feature_5, dim=1, keepdim=True)
+        spatial_max_out_5, _ = torch.max(upsample_feature_5, dim=1, keepdim=True)
+        spatial_out_5 = torch.cat([spatial_avg_out_5, spatial_max_out_5], dim=1)
+        spatial_out_5 = self.sigmoid(self.conv_4_3x3(spatial_out_5))
+        skip_connection_feature_5 = skip_connection_feature_5 * spatial_out_5
+        # spectral attention from lrhsi itself
+        if transformer:
+            avg_channel_9 = self.avg_pool_2d(upsample_feature_5)
+            max_channel_9 = self.max_pool_2d(upsample_feature_5)
+            avg_out_9 = self.fc_9_2(self.relu(self.fc_9_1(avg_channel_9)))
+            max_out_9 = self.fc_9_2(self.relu(self.fc_9_1(max_channel_9)))
+            channel_out_9 = avg_out_9 + max_out_9
+            channel_out_9 = self.sigmoid(channel_out_9)
+            upsample_feature_5 = upsample_feature_5 * channel_out_9
+        # concat the features with spatial attention
+        upsample_feature_5 = self.skip_up_conv_4(
+            torch.cat([upsample_feature_5, skip_connection_feature_5], dim=1)
+        )
+
+        # upsample 4
+        transformer = True
+        # upsample the feature with spatial attention with itself
+        upsample_feature_4 = self.up_sample_conv_4(upsample_feature_5)
+        skip_connection_feature_4 = self.skip_connection_4(feature_downsample_4)
+        # first spatial attention from skip feature
+        spatial_avg_out_4 = torch.mean(skip_connection_feature_4, dim=1, keepdim=True)
+        spatial_max_out_4, _ = torch.max(skip_connection_feature_4, dim=1, keepdim=True)
+        spatial_out_4 = torch.cat([spatial_avg_out_4, spatial_max_out_4], dim=1)
+        spatial_out_4 = self.sigmoid(self.conv_5_3x3(spatial_out_4))
+        upsample_feature_4 = upsample_feature_4 * spatial_out_4
+        # second spatial attention from itself
+        spatial_avg_out_4 = torch.mean(upsample_feature_4, dim=1, keepdim=True)
+        spatial_max_out_4, _ = torch.max(upsample_feature_4, dim=1, keepdim=True)
+        spatial_out_4 = torch.cat([spatial_avg_out_4, spatial_max_out_4], dim=1)
+        spatial_out_4 = self.sigmoid(self.conv_5_3x3(spatial_out_4))
+        skip_connection_feature_4 = skip_connection_feature_4 * spatial_out_4
+        # spectral attention from lrhsi itself
+        if transformer:
+            avg_channel_10 = self.avg_pool_2d(upsample_feature_4)
+            max_channel_10 = self.max_pool_2d(upsample_feature_4)
+            avg_out_10 = self.fc_10_2(self.relu(self.fc_10_1(avg_channel_10)))
+            max_out_10 = self.fc_10_2(self.relu(self.fc_10_1(max_channel_10)))
+            channel_out_10 = avg_out_10 + max_out_10
+            channel_out_10 = self.sigmoid(channel_out_10)
+            upsample_feature_4 = upsample_feature_4 * channel_out_10
+        # concat the features with spatial attention
+        upsample_feature_4 = self.skip_up_conv_5(
+            torch.cat([upsample_feature_4, skip_connection_feature_4], dim=1)
+        )
+
+        # upsample 3
+        transformer = True
+        # upsample the feature with spatial attention with itself
+        upsample_feature_3 = self.up_sample_conv_3(upsample_feature_4)
+        # upsample_feature_3 = self.up_sample_conv_3(feature_bottom)
+        skip_connection_feature_3 = self.skip_connection_3(feature_downsample_3)
+        # first spatia
