@@ -1,9 +1,0 @@
-tion\\checkpoints\\pavia_scale_8\\feature_map_1219\\core_tensor_{}.mat".format(epoch),
-        #                 save_mat)
-        return upsample_feature_1
-
-# 
-# network  =define_feature_unet( out_channel=31, H=128, Hc=500, W=128, Wc=500, scale=32,gpu_ids=[0])
-# A = torch.rand([1,31,4*32,4*32])
-# B = torch.rand([1,31,4,4])
-# network(A,B)
