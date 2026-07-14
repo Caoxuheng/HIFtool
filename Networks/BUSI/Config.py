@@ -23,5 +23,6 @@ parser.add_argument('--L', type=int, default=64, help='position encoding')
 parser.add_argument('--eta', type=float, default=1.0, help='weight')
 parser.add_argument('--ker_sz', type=int, default=32, help='kernel border size')
 parser.add_argument('--imsz', type=int, default=512, help='rgb border size')
+parser.add_argument('--max_epoch', type=int, default=2000, help='per-image optimisation iterations')
 parser.add_argument('--hsi_slice_xy', type=str, default='0,0', help='check dataset_pre.py line 76-78 for explaination')
-args = parser.parse_args()
+args = parser.parse_known_args()[0]
