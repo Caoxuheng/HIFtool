@@ -60,5 +60,45 @@ def initialization(LHSI, XYZ,research_scale, srf,u,sf):
     return recon
 
 
+def initialization_cpu(LHSI, XYZ, research_scale, srf, sf):
+    """NumPy equivalent of the CUDA spectral-angle initialization.
+
+    This is used only when the optional Numba CUDA runtime is unavailable.
+    It preserves the original 2*research_scale neighbourhood search while
+    vectorising each image row.
+    """
+    assert srf.min() >= 0, 'the minimum value of Spectral Response Function must be >= 0'
+    HSI = cv.copyMakeBorder(LHSI, research_scale, research_scale,
+                            research_scale, research_scale, cv.BORDER_REFLECT)
+    L_XYZ = HSI @ srf
+    XYZ = XYZ.copy()
+    XYZ[:, :, 0] /= np.maximum(np.max(XYZ, axis=-1), 1e-12)
+    L_XYZ[:, :, 0] /= np.maximum(np.max(L_XYZ, axis=-1), 1e-12)
+
+    height, width = XYZ.shape[:2]
+    span = 2 * research_scale
+    offsets = np.arange(span)
+    base_cols = np.arange(width) // sf
+    recon = np.empty((height, width, LHSI.shape[-1]), dtype=LHSI.dtype)
+    print('\r\033[1;31mInitializing (CPU fallback)...\033[0m', end='')
+    start_time = time.time()
+    for row in range(height):
+        base_row = row // sf
+        candidates = L_XYZ[base_row:base_row + span,
+                           base_cols[:, None] + offsets, :].transpose(1, 0, 2, 3)
+        reference = XYZ[row, :, None, None, :]
+        cosine = (candidates * reference).sum(axis=-1)
+        cosine /= np.maximum(
+            np.linalg.norm(candidates, axis=-1) * np.linalg.norm(reference, axis=-1), 1e-12
+        )
+        best = np.argmax(np.clip(cosine, -1.0, 1.0).reshape(width, -1), axis=1)
+        best_row, best_col = np.divmod(best, span)
+        recon[row] = HSI[base_row + best_row, base_cols + best_col]
+    end_time = time.time()
+    print('\r\033[1;32mInitialization Successfully (CPU fallback)\033[0m')
+    print('Initialization Time Cost: {:.3f}s \n'.format(end_time - start_time))
+    return recon
+
+
 
 

@@ -1207,9 +1207,18 @@ class FeatureUNet(nn.Module):
         feature_downsample_5_next_in = self.dowmsample_5(feature_downsample_5)
 
         # bottom conv feature
+        # The decoder has five 2x downsampling stages, so its bottleneck is
+        # always HR / 32.  The original integration passed the LR-HSI feature
+        # through unchanged, which only has that size at sf=32 (and fails for
+        # sf=8/16).  Align it to the actual bottleneck instead of assuming a
+        # particular scale factor.  Adaptive pooling is used here because it
+        # preserves the low-resolution observation grid without introducing
+        # bicubic ringing in the latent feature.
+        lr_feature_bottleneck = F.adaptive_avg_pool2d(
+            lr_hsi_feature_iter_3, feature_downsample_5_next_in.shape[-2:]
+        )
         feature_bottom = self.bottom_layer(
-            # upsample_feature_3 = self.bottom_layer(
-            torch.cat([feature_downsample_5_next_in, lr_hsi_feature_iter_3], dim=1)
+            torch.cat([feature_downsample_5_next_in, lr_feature_bottleneck], dim=1)
         )
         transformer = True
 

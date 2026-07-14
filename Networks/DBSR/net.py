@@ -210,6 +210,8 @@ class DBSR():
             Spa_up = Spa_UpNet(H_RGB[0],self.opt)
             H_HSI = Spa_up(im_h)
             net_input = Variable(0.8 * H_RGB + 0.2 * H_HSI).cuda()
+        else:
+            net_input = torch.nn.functional.interpolate(im_h, scale_factor=self.opt.sf, mode='bilinear', align_corners=False)
         if self.opt.U_spa == 1:
             # Learnable spatial downsampler
             print('learn spatial')

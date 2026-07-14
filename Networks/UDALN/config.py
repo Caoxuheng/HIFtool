@@ -12,8 +12,8 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('--blind',type=str, default=False,help='is blind fusion?')
 
 parser.add_argument('--sf',type=int,default=32, help='scale factor')
-parser.add_argument('--hsi_channel',type=int,default=128, help='HSI spectral band number')
-parser.add_argument('--msi_channel',type=int,default=4, help='MSI spectral band number')
+parser.add_argument('--hsi_channel',type=int,default=31, help='HSI spectral band number')
+parser.add_argument('--msi_channel',type=int,default=3, help='MSI spectral band number')
 
 parser.add_argument('--isCal_SRF',type=bool, default=False,help='Yes means the SRF is not known and our method can adaptively learn it; No means the SRF is known as a prior information.')
 parser.add_argument('--isCal_PSF',type=bool, default=False,help='Yes means the PSF is not known and our method can adaptively learn it; No means the PSF is known as a prior information.')
@@ -39,7 +39,7 @@ parser.add_argument("--decay_begin_epoch_stage3", type=int, default=5000, help='
 ###
 
 
-args=parser.parse_args()
+args=parser.parse_known_args()[0]
 
 device = torch.device(  'cuda:{}'.format(0)  ) if  torch.cuda.is_available() else torch.device('cpu')
 args.device=device

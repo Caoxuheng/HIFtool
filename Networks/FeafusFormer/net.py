@@ -17,14 +17,13 @@ def PSNR_GPU(im_true, im_fake):
     psnr = 10. * torch.log10((data_range**2)/err)
     return torch.mean(psnr)
   
-def Couple_init(spa,spe, msi, hsi, k=3):
+def Couple_init(spa, spe, msi, hsi, k=3, max_epochs=500):
     Batch, Channel, Height, Weight = hsi.shape
     phi, c = tensor_svds(hsi, k)
     trainer_SPE = torch.optim.AdamW(params=spe.parameters(), lr=5e-3, weight_decay=0.0001)
     lrsched_SPE = torch.optim.lr_scheduler.StepLR(trainer_SPE, 50, 0.8)
     trainer_SPA = torch.optim.AdamW(params=spa.parameters(), lr=5e-3, weight_decay=0.0001)
     lrsched_SPA = torch.optim.lr_scheduler.StepLR(trainer_SPA, 50, 0.8)
-    max_epochs = 500
     L1 = nn.L1Loss()
     L = []
     for epoch in range(max_epochs):
@@ -56,13 +55,32 @@ class Feafusformer():
         Batch, Channel, Height, Weight = HSI.shape
 
         # Define Networks
-        SpaDNet = SpaDown(sf=self.opt.sf, predefine=None,iscal=self.opt.isCal_PSF).to(self.device)
-        SpeDNet = SpeDown(span=self.sp_range,predefine=None,iscal=self.opt.isCal_SRF).to(self.device)
+        # In known-degradation evaluation the benchmark supplies the same SRF
+        # and PSF used to synthesize the CAVE observations.  The upstream
+        # snapshot ignored those values by always constructing blind nets with
+        # ``predefine=None``; that makes the fusion and degradation nets able
+        # to converge to an arbitrary, mutually-consistent solution.
+        if not self.opt.isCal_PSF and not hasattr(self, 'psf'):
+            raise RuntimeError('Known-PSF FeafusFormer evaluation requires model.equip(srf, psf).')
+        if not self.opt.isCal_SRF and not hasattr(self, 'sp_matrix'):
+            raise RuntimeError('Known-SRF FeafusFormer evaluation requires model.equip(srf, psf).')
+        SpaDNet = SpaDown(
+            sf=self.opt.sf,
+            predefine=None if self.opt.isCal_PSF else self.psf,
+            iscal=self.opt.isCal_PSF,
+        ).to(self.device)
+        SpeDNet = SpeDown(
+            span=self.sp_range,
+            predefine=None if self.opt.isCal_SRF else self.sp_matrix,
+            iscal=self.opt.isCal_SRF,
+        ).to(self.device)
 
 
         # Fusformer = MultiLevelFus(HSI,MSI,torch.FloatTensor(self.sp_matrix).cuda()).to(self.device)
         # # Define Loss
-        Fusformer = MultiLevelFus(HSI, MSI, SpeDNet.cuda()).to(self.device)
+        Fusformer = MultiLevelFus(
+            HSI, MSI, SpeDNet.cuda(), residual_bound=self.opt.residual_bound
+        ).to(self.device)
 
         loss = nn.L1Loss()
         # pec_loss = PerceptualLoss(Fusformer,MSI)
@@ -73,7 +91,7 @@ class Feafusformer():
             initialize_SpeDNet(module=SpeDNet, msi=MSI, hsi=HSI, sf=self.opt.sf)
             initialize_SpaDNet(module=SpaDNet, msi=MSI, msi2=SpeDNet(HSI))
             # joint initialization
-            Couple_init(SpaDNet, SpeDNet, MSI, HSI)
+            Couple_init(SpaDNet, SpeDNet, MSI, HSI, max_epochs=self.opt.init_epoch)
 
             trainer_spa = torch.optim.AdamW(params=SpaDNet.parameters(), lr=1e-5)
             trainer_spe = torch.optim.AdamW(params=SpeDNet.parameters(), lr=1e-5)
@@ -87,17 +105,21 @@ class Feafusformer():
             pre = Fusformer()
             recon_HSI = SpaDNet(pre)
             recon_MSI = SpeDNet(pre)
+            # A zero-shot fusion solution satisfying the LR-HSI/MSI losses is
+            # not unique.  Keep the reconstruction near the bicubic LR-HSI
+            # observation unless the MSI evidence learns a useful residual.
+            baseline_loss = self.opt.baseline_weight * loss(pre, Fusformer.coarse_HSI)
 
             if self.isBlind:
                 if i < self.opt.pre_epoch // 3:
                     # pre-launch
-                    l = loss(recon_HSI, HSI) + loss(recon_MSI, MSI)
+                    l = loss(recon_HSI, HSI) + loss(recon_MSI, MSI) + baseline_loss
                     l.backward()
                 else:
                     trainer_spa.zero_grad()
                     trainer_spe.zero_grad()
                     pre_phi = SpeDNet(phi)
-                    l = loss(recon_HSI, HSI) + loss(recon_MSI, MSI) +  \
+                    l = loss(recon_HSI, HSI) + loss(recon_MSI, MSI) + baseline_loss + \
                         loss(SpaDNet(MSI),SpeDNet(HSI)) + \
                         loss(SpaDNet(MSI), torch.bmm(pre_phi[:, :, :, 0], c.view(1, self.opt.K, -1)).view(1, MSI.shape[1], Height, Weight))
                     l.backward()
@@ -105,10 +127,19 @@ class Feafusformer():
                     trainer_spe.step()
 
             else:
-                l = loss(recon_HSI, HSI) + loss(recon_MSI, MSI)
+                l = loss(recon_HSI, HSI) + loss(recon_MSI, MSI) + baseline_loss
                 l.backward()
             trainer_fuse.step()
             sched.step()
+            if (i + 1) % 100 == 0 or i == 0:
+                print(
+                    f'FeafusFormer fusion epoch {i + 1}/{self.opt.pre_epoch}: '
+                    f'loss={l.detach().item():.6f}, anchor={baseline_loss.detach().item():.6f}',
+                    flush=True,
+                )
 
-        return pre[0].detach().cpu().numpy().T
+        # ``numpy.T`` reverses all axes (C,H,W -> W,H,C), silently swapping
+        # height and width for square CAVE images.  Use an explicit channel
+        # permutation so the returned array is H,W,C.
+        return pre[0].detach().cpu().permute(1, 2, 0).numpy()
 

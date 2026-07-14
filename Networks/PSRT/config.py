@@ -5,8 +5,10 @@ def args_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sf', type=int, default=32, help='scale factor')
     parser.add_argument('--patch_size', type=int, default=32*5)
-    parser.add_argument('--msi_channel', type=int, default=4)
-    parser.add_argument('--hsi_channel', type=int, default=128)
+    # NikonD700 spectral response used by the evaluation loader has three bands.
+    parser.add_argument('--msi_channel', type=int, default=3)
+    # CAVE and HARVARD samples (and the supplied PSRT checkpoints) contain 31 bands.
+    parser.add_argument('--hsi_channel', type=int, default=31)
     parser.add_argument('--n_bands', type=int, default=80)
     parser.add_argument('--clip_max_norm', type=int, default=10)
 
@@ -18,5 +20,5 @@ def args_parser():
     parser.add_argument('--lr', type=float, default=1e-4)
 
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
     return args

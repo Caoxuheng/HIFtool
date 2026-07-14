@@ -12,8 +12,9 @@ def argsParser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sf', type=int, default=32, help='scale factor')
     parser.add_argument('--patch_size', type=int, default=200)
-    parser.add_argument('--msi_channel', type=int, default=4)
-    parser.add_argument('--hsi_channel', type=int, default=93)
+    # The supplied CAVE/HARVARD checkpoints use NikonD700 RGB and 31-band HSI.
+    parser.add_argument('--msi_channel', type=int, default=3)
+    parser.add_argument('--hsi_channel', type=int, default=31)
 
     #
     ### hsi msi device setting
@@ -53,6 +54,6 @@ def argsParser():
                         help='Test mode')
 
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
 
     return args

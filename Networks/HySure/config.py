@@ -9,4 +9,4 @@ parser.add_argument("--msi_channel", type=int, default=3,help='')
 
 parser.add_argument("--isCal_SRF", type=bool, default=False,help='')
 parser.add_argument("--isCal_PSF", type=bool, default=True,help='')
-args=parser.parse_args()
+args=parser.parse_known_args()[0]

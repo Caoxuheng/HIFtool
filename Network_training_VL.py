@@ -176,6 +176,7 @@ def evalu_model_specific(model,opt,model_folder,test_epoch,end_epoch,dataset_nam
 def main(args):
 
     model, opt = model_generator(args.method,'cuda')
+    opt.cave_split = args.cave_split
     model_folder = args.method + '/' + args.dataset + '/'
 
     if args.general:
@@ -256,6 +257,9 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description='HSI-MSI Fusion Training/Testing Entrypoint')
     parser.add_argument('--method',           type=str, default='UDALN')
     parser.add_argument('--dataset',          type=str, default='CAVE', choices=['CAVE','HARVARD'])
+    parser.add_argument('--cave-split',       default='official', choices=['official', 'sequential_60_40'])
+    parser.add_argument('--sf',               type=int, default=32,
+                        help='Scale factor forwarded to the selected network configuration.')
     parser.add_argument('--batch_size',       type=int, default=1)
     parser.add_argument('--epochs',           type=int, default=2000)
     parser.add_argument('--ckpt_step',        type=int, default=50)
