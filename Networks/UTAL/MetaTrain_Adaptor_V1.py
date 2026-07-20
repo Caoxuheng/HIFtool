@@ -19,7 +19,20 @@ def LR_Decay(optimizer, n,lr):
 
 
 
+def _legacy_entrypoint_error(entrypoint):
+    raise RuntimeError(
+        f'{entrypoint} is deliberately disabled in the replacement UTAL package: '
+        'the old implementation meta-trained on the test split and did not load '
+        'the Fusion checkpoint during adaptation. Use '\
+        '"python Networks/UTAL/run_protocol.py" for the train-only, per-scene '
+        'test-time-adaptation protocol.'
+    )
+
+
 def meta_train_adaptor(GT,idx,opt,device,fusion_model):
+    _legacy_entrypoint_error('meta_train_adaptor')
+    """Legacy entry point retained only to prevent accidental test-GT leakage."""
+    # The original body is intentionally unreachable.
     lr = 5e-5
     lr_da = 1e-4
     lr_dc = 1e-4
@@ -170,6 +183,9 @@ def meta_train_adaptor(GT,idx,opt,device,fusion_model):
 
 
 def specific_learning_UTAL(LR_HSI, HR_MSI,iteration, opt, device):
+    _legacy_entrypoint_error('specific_learning_UTAL')
+    """Legacy entry point retained only to prevent silently unloaded weights."""
+    # The original body is intentionally unreachable.
     Stages = 40
     num_steps = 10
     lr = 1e-3

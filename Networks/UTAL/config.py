@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 
 def args_parser():
@@ -17,7 +18,8 @@ def args_parser():
 
 
     # Meta-Train
-    parser.add_argument('--pre_srf', type=str, default='Networks/UTAL/knowledge/P_N_V2.mat',help='A predefine spectral response function[for mat format]')
+    package_root = Path(__file__).resolve().parent
+    parser.add_argument('--pre_srf', type=str, default=str(package_root / 'knowledge' / 'P_N_V2.mat'),help='A predefine spectral response function[for mat format]')
     parser.add_argument('--pre_srf_key', type=str, default='P',
                         help='the key of pre_srf.mat')
     parser.add_argument('--fusion_model_path', type=str, default='UTAL/cave/700.pth',
@@ -28,6 +30,12 @@ def args_parser():
     # Specific learning
     parser.add_argument('--save_path_specific', type=str, default='',
                         help='the path of well-trained unsupervised network where ud store')
+
+    # HIFTool's reproducible CAVE protocol.  These fields are ignored by the
+    # legacy direct model call but are consumed by ``run_protocol.py``.
+    parser.add_argument('--dataset-root', type=str, default='D:/CaoXuheng/dataset')
+    parser.add_argument('--cave-split', default='sequential_60_40',
+                        choices=('official', 'sequential_60_40'))
 
     args = parser.parse_known_args()[0]
     return args
