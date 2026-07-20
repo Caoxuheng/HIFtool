@@ -1,11 +1,20 @@
 # PUT-PDN adapter
 
-The official PUT implementation is a hyperspectral **pansharpening** network:
-it requires LR-HSI and a one-channel HR-PAN image. HIFTool supplies LR-HSI and
-three-channel HR-MSI, so this adapter deterministically constructs `PAN = mean(MSI)`.
-The PUT architecture, supervision objective and learnable degradation operators are
-otherwise unchanged. Results under this adapter must be reported as **MSI-to-PAN proxy**
-adaptation, not as the original PUT-PDN paper protocol.
+The official PUT implementation is a hyperspectral **pansharpening** network.
+This HIFTool baseline widens every PAN-dependent operation to preserve the
+three native HR-MSI channels (`3 -> 6 -> 12` through the encoder) instead of
+collapsing MSI into a synthetic PAN image.
+The architecture otherwise retains PUT's unfolding stages and learnable spatial/
+spectral degradation operators. Its training objective is `L1(HR-HSI) + 0.1
+L1(reconstructed HR-MSI, HR-MSI) + 0.1 L1(reconstructed LR-HSI, LR-HSI)`.
+Results must be reported as **PUT-PDN-MSI**, not as the original PUT-PDN paper
+protocol.
 
 The official source is expected at `external/comparison_official/PUT-PDN` and is
 loaded by `model_generator('PUTPDN')`.
+
+Run the CAVE x32 protocol with:
+
+```powershell
+python comparison_benchmarks/run_putpdn.py --max-steps 10000
+```

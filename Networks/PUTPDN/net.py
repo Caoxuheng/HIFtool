@@ -24,30 +24,28 @@ def _load_put():
 
 
 class PUTPDN(nn.Module):
-    """PUT with a fixed, explicit HR-MSI-to-PAN adapter for HIFTool data."""
+    """PUT-PDN-MSI: the PUT architecture with a native three-channel MSI guide."""
 
     def __init__(self, options):
         super().__init__()
-        if options.put_pan_mode != "mean":
-            raise ValueError(f"Unsupported PAN proxy: {options.put_pan_mode}")
         PUT = _load_put()
         self.options = options
         self.model = PUT(
             ratio=options.sf,
-            in_channels=1,
+            in_channels=options.msi_channel,
             out_channels=options.hsi_channel,
             stage=options.put_stages,
             channels=options.hsi_channel,
             neumann_terms=options.put_neumann_terms,
         )
 
-    def pan_proxy(self, hr_msi: torch.Tensor) -> torch.Tensor:
+    def msi_guide(self, hr_msi: torch.Tensor) -> torch.Tensor:
         if hr_msi.shape[1] != self.options.msi_channel:
             raise ValueError(f"Expected {self.options.msi_channel} MSI channels, got {hr_msi.shape[1]}")
-        return hr_msi.mean(dim=1, keepdim=True)
+        return hr_msi
 
     def forward(self, lr_hsi: torch.Tensor, hr_msi: torch.Tensor):
-        prediction, reconstructed_pan, reconstructed_lr_hsi = self.model(
-            lr_hsi, self.pan_proxy(hr_msi)
+        prediction, reconstructed_msi, reconstructed_lr_hsi = self.model(
+            lr_hsi, self.msi_guide(hr_msi)
         )
-        return prediction, reconstructed_pan, reconstructed_lr_hsi
+        return prediction, reconstructed_msi, reconstructed_lr_hsi
