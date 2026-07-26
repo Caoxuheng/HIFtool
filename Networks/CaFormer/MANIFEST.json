@@ -1,0 +1,14 @@
+{
+  "package": "CaFormer_HIFTool_replacement",
+  "target": "Networks/CaFormer",
+  "api_compatibility": "CaFormer(sf, in_c, out_c, n_feat, nums_stages, n_depth)",
+  "checkpoint_compatibility": "preserves released CaFormer state_dict names",
+  "modes": {
+    "supervised": "standard CaFormer checkpoint inference/training",
+    "blind": "uHNTC degradation estimation plus observation-supervised per-image adaptation"
+  },
+  "blind_uses_ground_truth": false,
+  "blind_uses_true_srf_or_psf": false,
+  "blind_dependency": "Networks/FeafusFormer",
+  "tested_scales": [2, 4, 8, 16, 32]
+}

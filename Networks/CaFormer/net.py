@@ -4,6 +4,25 @@ from torch import nn
 from einops import rearrange
 import numbers
 
+
+def _safe_pad(x, pad_h, pad_w):
+    """Pad spatial dimensions without failing on very small inputs."""
+    if pad_h == 0 and pad_w == 0:
+        return x
+    mode = "reflect"
+    if x.shape[-2] <= pad_h or x.shape[-1] <= pad_w:
+        mode = "replicate"
+    return F.pad(x, [0, pad_w, 0, pad_h], mode=mode)
+
+
+def _check_observations(hsi, msi):
+    if hsi.ndim != 4 or msi.ndim != 4:
+        raise ValueError("CaFormer expects BCHW LR-HSI and HR-MSI tensors.")
+    if hsi.shape[0] != msi.shape[0]:
+        raise ValueError("LR-HSI and HR-MSI batch sizes must match.")
+    if hsi.shape[-2] > msi.shape[-2] or hsi.shape[-1] > msi.shape[-1]:
+        raise ValueError("LR-HSI cannot be spatially larger than HR-MSI.")
+
 # ======================Norm Method===========================
 def to_3d(x):
     return rearrange(x, 'b c h w -> b (h w) c')
@@ -300,7 +319,7 @@ class CaBlock(nn.Module):
         hb, wb = 16, 16
         pad_h = (hb - h_inp % hb) % hb
         pad_w = (wb - w_inp % wb) % wb
-        r_k = F.pad(r_k, [0, pad_w, 0, pad_h], mode='reflect')
+        r_k = _safe_pad(r_k, pad_h, pad_w)
         r_k = self.shallow_feat(r_k)
         feat1, f_encoder = self.stage_encoder(r_k, f_encoder, f_decoder)
 
@@ -325,6 +344,8 @@ class CaFormer(nn.Module):
         self.eta_3 = torch.nn.Parameter(torch.tensor(0.9))
 
 
+        # Kept as state-free compatibility attributes for released checkpoints.
+        # Forward paths use explicit output sizes to avoid scale-factor rounding.
         self.conv_downsample = torch.nn.Upsample(scale_factor=1 / sf)
         self.conv_upsample = torch.nn.Upsample(scale_factor=sf)
 
@@ -365,8 +386,12 @@ class CaFormer(nn.Module):
     def dun_rc(self, features, recon,lrhsi, msi):
         DELTA = self.delta_0
         ETA = self.eta_0
-        down = self.conv_downsample(recon)
-        res_lrhsi = self.conv_upsample(down - lrhsi )
+        down = F.interpolate(
+            recon, size=lrhsi.shape[-2:], mode='bicubic', align_corners=False
+        )
+        res_lrhsi = F.interpolate(
+            down - lrhsi, size=recon.shape[-2:], mode='bicubic', align_corners=False
+        )
         f_msi = self.conv_tomsi(recon)
         res_msi = msi - f_msi
         res_hsi = self.conv_tohsi(res_msi)
@@ -374,14 +399,18 @@ class CaFormer(nn.Module):
         return out
 
     def forward(self, HSI,MSI):
+        _check_observations(HSI, MSI)
         output_ = []
         #Stage 1
         b, c,h_inp, w_inp = MSI.shape
-        x = torch.nn.functional.interpolate(HSI, scale_factor=self.scale_factor, mode='bicubic', align_corners=False)
+        x = torch.nn.functional.interpolate(
+            HSI, size=(h_inp, w_inp), mode='bicubic', align_corners=False
+        )
         hb, wb = 16, 16
         pad_h = (hb - h_inp % hb) % hb
         pad_w = (wb - w_inp % wb) % wb
-        r_0 = F.pad(x, [0, pad_w, 0, pad_h], mode='reflect')
+        r_0 = _safe_pad(x, pad_h, pad_w)
+        msi_padded = _safe_pad(MSI, pad_h, pad_w)
 
         # Stage1
         x = self.shallow_feat(r_0)
@@ -391,11 +420,15 @@ class CaFormer(nn.Module):
         output_.append(stage_img)
         # Stage 2_k-1
         for i in range(self.nums_stages):
-            stage_img, feat1, f_decoder = self.stage_model[i](stage_img, r_0, MSI ,feat1, f_decoder)
+            stage_img, feat1, f_decoder = self.stage_model[i](
+                stage_img, r_0, msi_padded, feat1, f_decoder
+            )
             stage_img = F.leaky_relu(self.stage_project[i](stage_img))
             output_.append(stage_img)
-            r_0 = self.dun_rc(stage_img, r_0, HSI, MSI)
-        return output_[-1]
+            r_0 = self.dun_rc(stage_img, r_0, HSI, msi_padded)
+        # uHNTC SpeDNet uses a legacy ``view`` operation and therefore expects
+        # contiguous reconstruction memory.
+        return output_[-1][..., :h_inp, :w_inp].contiguous()
 
 
 if __name__ =='__main__':
