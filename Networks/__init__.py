@@ -1,10 +1,26 @@
 import numpy as np
 
 
-def model_generator(method:str, device="cuda"):
+def model_generator(method: str, device="cuda"):
 
+    method_key = method.lower().replace('-', '').replace('_', '').replace(' ', '')
 
-    if 'CaFormer' in method:
+    if 'emrdiff' in method_key:
+        from .EMRDiff.config import args_parser
+        from .EMRDiff.net import EMRDiffNet
+        opt = args_parser()
+        model = EMRDiffNet(opt).to(device)
+    elif 'psrfdiff' in method_key:
+        from .PSRFDiff.config import args_parser
+        from .PSRFDiff.net import PSRFDiffNet
+        opt = args_parser()
+        model = PSRFDiffNet(opt).to(device)
+    elif 'bhsrnet' in method_key or method_key == 'bhsr':
+        from .BHSRNet.config import args_parser
+        from .BHSRNet.net import BHSRNet
+        opt = args_parser()
+        model = BHSRNet(opt).to(device)
+    elif 'CaFormer' in method:
         from .CaFormer.net import CaFormer
         from .CaFormer.Config import args as opt
         num_iterations = int(method.split('_')[-1])
@@ -97,9 +113,16 @@ def model_generator(method:str, device="cuda"):
         # sp_range = np.array([range(4)])
         model = Feafusformer(opt,sp_range,device)
     elif 'ZSL' in method:
-        raise NotImplementedError(
-            'ZSL is an incomplete upstream source snapshot and has no runnable evaluation implementation.'
-        )
+        from .ZSL.config import args_parser
+        from .ZSL.net import ZSL
+        opt = args_parser()
+        model = ZSL(opt, device)
+
+    elif 'PUTPDN' in method:
+        from .PUTPDN.config import args_parser
+        from .PUTPDN.net import PUTPDN
+        opt = args_parser()
+        model = PUTPDN(opt).to(device)
 
     
     else:
