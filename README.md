@@ -4,8 +4,11 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 
 本项目旨在收录高光谱和多光谱/全色锐化领域的SOTA算法。收录算法主要分三类：基于模型的算法、自/无监督学习算法,以及监督学习算法。加入我们，共同推动光谱图像处理技术的发展！！！！
 
+
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
+
+> **[2026.08.10]**  EMR-Diff, PSRF-DiffNet, and BHSR-Net, three supervised hyperspectral image fusion methods, have been added to HIFTool with unified training and inference interfaces.
 
 > **[2025.10.21]**  Fixed a bug that prevented HySure from supporting blind fusion.
 
@@ -34,11 +37,14 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 | [PSRT](https://github.com/shangqideng/PSRT) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:v1UsDdmP02kJ:scholar.google.com/&output=citation&scisdr=ClEn-KBbGAA:AFWwaeYAAAAAZfzq836StZmuiBOmfmVVq4N10Os&scisig=AFWwaeYAAAAAZfzq85hczfI6DL9lRnYwzy3M_pM&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]  |[FeafusFormer](https://github.com/Caoxuheng/FeafusFormer) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:aMfnxk1NCsIJ:scholar.google.com/&output=citation&scisdr=ClE2KNo0GAA:AFWwaeYAAAAAZfzt5IO3l3FK900X1f__rVGoU7s&scisig=AFWwaeYAAAAAZfzt5KuMGawtVE7Gjgzoc0mzkQ0&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]| 
 | [MSST-Net](https://github.com/jx-mzc/MSST-Net) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:SL2o22p2NUQJ:scholar.google.com/&output=citation&scisdr=ClGT3Z9GGAA:AFWwaeYAAAAAZfzrHSbuijFA2riDQJZEXZr1GnE&scisig=AFWwaeYAAAAAZfzrHYGTYyXUa-y0H73FZG5JTXM&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]  |[DTDNML](https://github.com/Shawn-H-Wang/DTDNML) [[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:tazifhPmqcEJ:scholar.google.com/&output=citation&scisdr=CgJrHYeSEI3CgyhQrk:AAZF9b8AAAAAaOunWrlR4qbgAh3i7NsIfaJksgA&scisig=AAZF9b8AAAAAaOunWlKEuGpTy7F2p41aWnRiZWc&scisf=3&ct=citation&cd=-1&hl=ja)] |  
 | [DCTransformer](https://github.com/qingma2016/DCTransformer) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:yGUmoYD5aNoJ:scholar.google.com/&output=citation&scisdr=ClG_1Q4VGAA:AFWwaeYAAAAAZfzrkFunjs4brfHK-MujBieQ_Wo&scisig=AFWwaeYAAAAAZfzrkGWmRph52cvPtHZn16FAByQ&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ] |[BUSI](https://github.com/CPREgroup/Real-Spec-RGB-Fusion) [ [EndNote](https://scholar.googleusercontent.com/scholar.enw?q=info:LefCYqw0IO0J:scholar.google.com/&output=citation&scisdr=CgJrHYeSEI3CgytV-Hk:AAZF9b8AAAAAaO9T4HmMx6V_cqTsV0iKNEgK1II&scisig=AAZF9b8AAAAAaO9T4DjPESJHiRA_XnQ54oKpOVQ&scisf=3&ct=citation&cd=-1&hl=ja)] |
-| [ZSL](https://github.com/renweidian/ZSL) [[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:xwOjx9T4im4J:scholar.google.com/&output=citation&scisdr=CgKVok6hEI3CgxqZP_8:AAZF9b8AAAAAaN6fJ_9kux-MxVl7zJrQPRjO6Ug&scisig=AAZF9b8AAAAAaN6fJ2Gj4M5SyxrquIGdjqhT2G4&scisf=3&ct=citation&cd=-1&hl=ja)  ] | |
-| [UALT](https://github.com/JiangtaoNie/UAL)[[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:bufNg-HxkLoJ:scholar.google.com/&output=citation&scisdr=CsmmsOAzEKn0u4_WZZA:AM1tuoMAAAAAal3QfZCikd_felY_xr0KFY1NF9Q&scisig=AM1tuoMAAAAAal3Qfc6IeQRLKsatTvXd-rwS8uA&scisf=3&ct=citation&cd=-1&hl=zh-CN) ] | |
+| [EMR-Diff](https://github.com/luocz55/EMR-Diff) | |
+| [PSRF-DiffNet](https://github.com/Jiahuiqu/PSRF-DiffNet) | |
+| [BHSR-Net](https://github.com/Dou0405/BHSR-Net) | |
+| [ZSL](https://github.com/renweidian/ZSL) | |
+| [UALT](https://github.com/JiangtaoNie/UAL)[[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:HjlfSoeCMRoJ:scholar.google.com/&output=citation&scisdr=ClEoKphsELz5qTObULs:AFWwaeYAAAAAZ4edSLt5dkm5DMsYBDU6FvjYK2c&scisig=AFWwaeYAAAAAZ4edSHnUKpsQW7VtulKeI1OBYr0&scisf=3&ct=citation&cd=-1&hl=ja) ] | |
 | [PSTUN](https://github.com/XWangBin/PSTUN ) [[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:fYcg7aLdCPkJ:scholar.google.com/&output=citation&scisdr=CgKVok6hEI3CgxqZWnM:AAZF9b8AAAAAaN6fQnP-YOdLHZsjvUib-tv4GgA&scisig=AAZF9b8AAAAAaN6fQpU6JZU6RnrwYf35p3tZmJI&scisf=3&ct=citation&cd=-1&hl=ja)  ] | |
 | [CaFormer](https://github.com/Caoxuheng/CDaFormer) [[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:xwOjx9T4im4J:scholar.google.com/&output=citation&scisdr=CgKVok6hEI3CgxqZP_8:AAZF9b8AAAAAaN6fJ_9kux-MxVl7zJrQPRjO6Ug&scisig=AAZF9b8AAAAAaN6fJ2Gj4M5SyxrquIGdjqhT2G4&scisf=3&ct=citation&cd=-1&hl=ja)  ] | |
-| [PUT]( GitHub.com/XWangBin/PUT-PDN) [[Endnote](https://scholar.googleusercontent.com/scholar.enw?q=info:iugfACls54EJ:scholar.google.com/&output=citation&scisdr=CsmmsOAzEKn0u4_h-dA:AM1tuoMAAAAAal3n4dACiUi1FbeiJnbdMd6vapQ&scisig=AM1tuoMAAAAAal3n4ZbnpNPGH7cDlllnzFHlDBw&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ] | |
+| [PUT](https://github.com/XWangBin/PUT-PDN) | |
 </td></tr> </table>   
 
 ## Dataset  
