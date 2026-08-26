@@ -5,7 +5,17 @@ def model_generator(method: str, device="cuda"):
 
     method_key = method.lower().replace('-', '').replace('_', '').replace(' ', '')
 
-    if 'emrdiff' in method_key:
+    if method_key in {'cdmap', 'cdmapcpu', 'cdmapcuda', 'cdmapgpu'}:
+        from .CDMAP import CDMAP, CDMAPConfig
+        if method_key == 'cdmapcpu':
+            backend = 'cpu'
+        elif method_key in {'cdmapcuda', 'cdmapgpu'}:
+            backend = 'cuda'
+        else:
+            backend = 'auto'
+        opt = CDMAPConfig(backend=backend)
+        model = CDMAP(opt)
+    elif 'emrdiff' in method_key:
         from .EMRDiff.config import args_parser
         from .EMRDiff.net import EMRDiffNet
         opt = args_parser()
