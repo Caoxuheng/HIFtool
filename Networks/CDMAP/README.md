@@ -65,7 +65,6 @@ The released CUDA kernel is the validated CAVE/Harvard nominal configuration:
 implementation and add new CPU/CUDA parity tests before publishing other band
 counts or support sizes.
 
-Add the final paper title, DOI, and BibTeX entry here before the public release.
 
 The CUDA release was validated on Windows with an RTX 5090, driver 581.80,
 CUDA Toolkit 13.0, and Numba 0.66.0. On that workstation the backend binds
