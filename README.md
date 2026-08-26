@@ -8,6 +8,8 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 <details open>  <summary>  <b>News</b>📰 </summary> <p>
 <!--  may -->  
 
+> **[2026.08.26]** CDMAP has been added with a fully GPU-resident Numba-CUDA backend and a strictly single-threaded Numba CPU backend. The default `CDMAP` entry prefers CUDA and automatically falls back to CPU when CUDA is unavailable.
+
 > **[2026.08.10]**  EMR-Diff, PSRF-DiffNet, and BHSR-Net, three supervised hyperspectral image fusion methods, have been added to HIFTool with unified training and inference interfaces.
 
 > **[2025.10.21]**  Fixed a bug that prevented HySure from supporting blind fusion.
@@ -28,6 +30,7 @@ Welcome to our groundbreaking project! Our mission is to compile state-of-the-ar
 
  [HySure](https://github.com/alfaiate/HySure) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:MO4wOAc9b08J:scholar.google.com/&output=citation&scisdr=ClGi1W3VGAA:AFWwaeYAAAAAZfztZSG-TNwxaiI6XKNB_oyLblg&scisig=AFWwaeYAAAAAZfztZbzgCePAMT0xni7804KkXUQ&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]  
  [HyMS](https://github.com/Caoxuheng/HyMS) [[Endnote](https://serveri.dotaindex.com/enw.php?q=info:xLPyMJZ-FpMJ:scholar.google.com/&output=citation&scisdr=ClGi7GzdGAA:AFWwaeYAAAAAZfKHBs36iuksvtwHR3tOxJj4K_E&scisig=AFWwaeYAAAAAZfKHBi22c5pG0ocO8IdsD7IeD64&scisf=3&ct=citation&cd=-1&hl=zh-CN)  ]    
+ [CDMAP](Networks/CDMAP) (training-free; CUDA/serial-CPU)  
 </td><td>
 
 |   supervised   |   unsupervised   |
@@ -54,6 +57,15 @@ Recommended Pansharpening Datasets [![Baidu](https://img.shields.io/badge/PanCol
 ## How to use?
 [中文说明](https://blog.csdn.net/Syuhen/article/details/139836202)
 
+CDMAP nominal 32x evaluation (CUDA preferred, automatic serial-CPU fallback):
+
+```bash
+python Network_eval_VL.py --method CDMAP --dataset CAVE --dataset-root /path/to/dataset
+python Network_eval_VL.py --method CDMAP --dataset HARVARD --dataset-root /path/to/dataset
+```
+
+For controlled backend runs, add `--cdmap-backend cuda` or `--cdmap-backend cpu`.
+
 <details open>  <summary>  <b>History</b>📰 </summary> <p>
 <!--  may -->  
 
@@ -76,5 +88,4 @@ Recommended Pansharpening Datasets [![Baidu](https://img.shields.io/badge/PanCol
  For any questions, feedback, or issues related to the HIFTool, please feel free to contact me via email.  
  关于HIFTool的任何问题、反馈或疑问，请随时发起issue或电子邮件与我联系。  
   [![Email](https://img.shields.io/badge/-caoxuhengcn%20(Supporting%20EN/CN)%20-white?style=square&logo=Gmail&link=mailto:caoxuhengcn@gmail.com)](mailto:caoxuhengcn@gmail.com)   
-
 
