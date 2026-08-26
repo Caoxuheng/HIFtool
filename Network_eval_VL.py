@@ -1,4 +1,5 @@
 import argparse
+import time
 from pathlib import Path
 
 import imgvision as iv
@@ -13,9 +14,12 @@ from Networks import model_generator
 DIRECT_EVAL_METHODS = ('PSRT', 'MoGDCN', 'MSST', 'Fusformer', 'CaFormer',
                        'DCTransformer', 'PSTUN', 'UTAL')
 ADAPTIVE_METHODS = ('BUSI', 'DBSR', 'DTDNML', 'FeafusFormer', 'UDALN', 'HyMS', 'HySure')
+TRAINING_FREE_METHODS = ('CDMAP', 'CDMAP-CPU', 'CDMAP-CUDA')
 
 
 def method_category(method):
+    if 'CDMAP' in method.upper():
+        return 'training_free'
     if any(name in method for name in DIRECT_EVAL_METHODS):
         return 'direct'
     if any(name in method for name in ADAPTIVE_METHODS):
@@ -23,6 +27,40 @@ def method_category(method):
     if 'ZSL' in method:
         return 'unavailable'
     return 'unknown'
+
+
+def evaluate_training_free(model, data_loader, output_dir=None, max_samples=None, warmup_runs=1):
+    """Evaluate an HWC NumPy callable without loading a training checkpoint."""
+    times = []
+    for iteration, batch in enumerate(data_loader, 1):
+        if max_samples is not None and iteration > max_samples:
+            break
+        ground_truth, lrhsi, hrmsi = batch[0], batch[1], batch[2]
+        ground_truth = ground_truth[0].permute(1, 2, 0).numpy()
+        lrhsi = lrhsi[0].permute(1, 2, 0).numpy()
+        hrmsi = hrmsi[0].permute(1, 2, 0).numpy()
+
+        if iteration == 1:
+            for _ in range(warmup_runs):
+                warmup_output = model(lrhsi, hrmsi)
+                if not np.isfinite(warmup_output).all():
+                    raise FloatingPointError('CDMAP produced NaN or Inf during warm-up.')
+
+        start = time.perf_counter()
+        output = model(lrhsi, hrmsi)
+        times.append(time.perf_counter() - start)
+
+        sample_name = str(data_loader.dataset.test_name[iteration - 1])
+        iv.spectra_metric(output, ground_truth).Evaluation(sample_name)
+        if output_dir:
+            np.save(output_dir / f'{sample_name}.npy', output)
+
+    if times:
+        sample_std = float(np.std(times, ddof=1)) if len(times) > 1 else 0.0
+        print(
+            f'CDMAP {model.backend_name.upper()} time: '
+            f'{float(np.mean(times)):.6f} +/- {sample_std:.6f} s, n={len(times)}'
+        )
 
 
 def find_checkpoint(method, dataset):
@@ -117,6 +155,10 @@ def main():
                         help='Optional HRMSI tile size for memory-constrained inference.')
     parser.add_argument('--max-samples', type=int, help='Optional limit for a smoke test.')
     parser.add_argument('--device', default='cuda', help='Torch device, e.g. cuda or cpu.')
+    parser.add_argument('--cdmap-backend', default='auto', choices=['auto', 'cuda', 'cpu'],
+                        help='CDMAP backend. auto prefers CUDA and falls back to serial CPU.')
+    parser.add_argument('--cdmap-warmups', type=int, default=1,
+                        help='Untimed full-image warm-up runs before CDMAP timing.')
     parser.add_argument('--save-output', action='store_true', help='Save reconstructed cubes next to the checkpoint.')
     parser.add_argument('--list-models', action='store_true',
                         help='List models supported by this evaluator and exit.')
@@ -125,10 +167,38 @@ def main():
     if args.list_models:
         print('Direct checkpoint evaluation:', ', '.join(DIRECT_EVAL_METHODS))
         print('Per-image adaptive/model-based methods:', ', '.join(ADAPTIVE_METHODS))
+        print('Training-free direct methods:', ', '.join(TRAINING_FREE_METHODS))
         print('Unavailable upstream source: ZSL')
         return
 
     category = method_category(args.method)
+    if category == 'training_free':
+        if args.scale != 32:
+            raise ValueError('The released CDMAP configuration is fixed to the published 32x protocol.')
+        method = args.method
+        if method.upper() == 'CDMAP':
+            if args.cdmap_backend == 'cpu':
+                method = 'CDMAP-CPU'
+            elif args.cdmap_backend == 'cuda':
+                method = 'CDMAP-CUDA'
+        model, opt = model_generator(method)
+        opt.dataset_root = args.dataset_root
+        opt.cave_split = args.cave_split
+        patch_size = args.patch_size or (512 if args.dataset == 'CAVE' else 1024)
+        output_dir = None
+        if args.save_output:
+            output_dir = Path('CDMAP') / args.dataset / f'{model.backend_name}_{args.scale}x'
+            output_dir.mkdir(parents=True, exist_ok=True)
+        dataset = Large_dataset(opt, patch_size, name=args.dataset, type='test', lazy=True)
+        data_loader = DataLoader(dataset=dataset, num_workers=0, batch_size=1, shuffle=False,
+                                 pin_memory=False, drop_last=False)
+        if args.cdmap_warmups < 0:
+            raise ValueError('--cdmap-warmups must be non-negative.')
+        evaluate_training_free(
+            model, data_loader, output_dir, args.max_samples, args.cdmap_warmups
+        )
+        return
+
     if category != 'direct':
         if category == 'adaptive':
             raise ValueError(
